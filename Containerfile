@@ -2,6 +2,8 @@ FROM ghcr.io/wayblueorg/hyprland:43
 
 RUN dnf copr enable -y llamatron/bazaar && \
     dnf copr enable -y chronoscrat/oh-my-posh && \
+    dnf copr enable -y solopasha/hyprland && \
+    dnf upgrade -y hyprland hyprutils hyprlang hyprwayland-scanner && \
     dnf install -y --skip-unavailable \
     fastfetch swww bazaar distrobox \
     mangohud SwayNotificationCenter oh-my-posh && \

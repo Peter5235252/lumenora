@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+name: lumenora
+description: A plug-and-play Hyprland distro based on Wayblue
+base-image: ghcr.io/wayblueorg/hyprland
+image-version: 43
+
+modules:
+  - type: rpm-ostree
+    repos:
+      - https://copr.fedorainfracloud.org/coprs/llamatron/bazaar/repo/fedora-43/llamatron-bazaar-fedora-43.repo
+    install:
+      - fastfetch
+      - hyprpaper
+      - swww
+      - bazaar-store
+      - distrobox
+      - mangohud
+      - gamemode
+      - quickshell
+      - SwayNotificationCenter
+
+  - type: files
+    files:
+      - usr: /usr
+
+  - type: script
+    scripts:
+      - rebrand.sh

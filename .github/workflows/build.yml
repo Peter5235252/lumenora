@@ -18,23 +18,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Enable Docker experimental
+      - name: Install Podman
         run: |
-          echo '{"experimental": true}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          sudo apt-get update
+          sudo apt-get install -y podman
 
       - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build and Push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Containerfile
-          push: true
-          tags: ghcr.io/peter5235252/lumenora:latest
-          squash: true
+        run: |
+          podman build --squash -t ghcr.io/peter5235252/lumenora:latest -f Containerfile .
+          podman push ghcr.io/peter5235252/lumenora:latest

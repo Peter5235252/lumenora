@@ -1,4 +1,4 @@
 [[customizations.user]]
-name = "lumen"
-password = "lumen"
+name = "root"
+password = "root"
 groups = ["wheel"]

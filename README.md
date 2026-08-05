@@ -10,6 +10,7 @@ desktop configuration with Lumenora branding.
 - Wayblue's Hyprland image
 - [ML4W](https://github.com/mylinuxforwork/dotfiles) Hyprland dotfiles and tools
 - [BlueBuild](https://blue-build.org/) for image generation
+- Fedora's Anaconda installer and unified [Image Builder](https://osbuild.org/docs/developer-guide/projects/image-builder/)
 
 The recipe tracks Wayblue's `latest` image tag. This follows the current
 upstream Fedora Atomic and Wayblue base, but upstream changes should still be
@@ -23,12 +24,9 @@ to the software already provided by Wayblue and ML4W.
 
 ## User setup and security
 
-Lumenora doesn't create a `lumen` user or bake a Lumenora password into the
-image. Username and password setup belongs to the installer.
-
-The repository's `config.toml` uses `root` / `root` as the installer default,
-as requested. Don't deploy those defaults unchanged. Set a unique username
-and strong password in the installer before first boot.
+Lumenora doesn't create a user or bake any username or password into the image.
+The installer collects the desired username and password during installation.
+No credentials are committed to this repository.
 
 ## Building locally
 
@@ -46,13 +44,45 @@ the package and base-image choices in `recipe.yml`:
 podman build -t lumenora:latest -f Containerfile .
 ```
 
+## Graphical installer ISO
+
+Lumenora uses a separate Anaconda installer environment and the unified
+Image Builder `bootc-generic-iso` image type. The installer embeds the
+selected Lumenora image as its payload and asks for installation settings
+interactively. The desktop payload remains credential-free.
+
+To build an ISO locally:
+
+```bash
+podman pull ghcr.io/peter5235252/lumenora:latest
+podman build -t localhost/lumenora-installer:latest -f installer/Containerfile installer
+mkdir -p output
+sudo podman run --rm --privileged \
+  --security-opt label=type:unconfined_t \
+  -v "$PWD/output:/output" \
+  -v /var/lib/containers/storage:/var/lib/containers/storage \
+  ghcr.io/osbuild/image-builder-cli:latest \
+  build \
+  --bootc-ref localhost/lumenora-installer:latest \
+  --bootc-installer-payload-ref ghcr.io/peter5235252/lumenora:latest \
+  --bootc-default-fs ext4 \
+  bootc-generic-iso
+```
+
+The resulting ISO is written to `output/`. The installer workflow can also
+be started manually from GitHub Actions with a chosen payload image. It uploads
+the ISO as a workflow artifact.
+
+This installer path is intended for testing initially. The Image Builder
+documentation notes that bootc installations through Anaconda currently have
+a known `systemd-remount-fs.service` issue, so test the ISO in a VM before
+using it on a real machine.
+
 ## GitHub Actions
 
-The workflow builds on pushes to `main` and weekly. It publishes to:
-
-```text
-ghcr.io/peter5235252/lumenora:latest
-```
+The normal workflow builds and publishes the Lumenora image on pushes to
+`main` and weekly. The installer workflow runs manually or when a version tag
+such as `v1.0.0` is pushed. It publishes the ISO as a GitHub Actions artifact.
 
 The repository needs a `SIGNING_SECRET` GitHub Actions secret containing the
 Cosign private key expected by the BlueBuild action. The public key is kept in
@@ -60,19 +90,21 @@ Cosign private key expected by the BlueBuild action. The public key is kept in
 
 ## Installing or rebasing
 
-Follow Wayblue's installation and rebase instructions for your hardware. Use
-the regular Hyprland image for non-NVIDIA systems or the matching NVIDIA
-variant when required. Replace the Wayblue image name with the Lumenora image
-published by this repository, then set the desired installer username and
-password before rebooting.
+Use the graphical ISO for a fresh installation. For an existing Fedora Atomic
+system, follow Wayblue's rebase instructions for your hardware. Use the regular
+Hyprland image for non-NVIDIA systems or the matching NVIDIA variant when
+required.
 
 ## Project layout
 
 - `recipe.yml` is the canonical BlueBuild recipe.
 - `Containerfile` is the matching direct-build definition.
+- `installer/Containerfile` defines the Anaconda installer environment.
+- `installer/iso.yaml` defines the boot menu and ISO label.
+- `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.
+- `.github/workflows/installer.yml` builds and uploads the graphical ISO.
 - `files/etc/skel` contains the default user configuration.
 - `scripts/rebrand.sh` applies Lumenora branding and permissions at build time.
-- `.github/workflows/build.yml` builds and publishes the image.
 
 ## Upstream work
 

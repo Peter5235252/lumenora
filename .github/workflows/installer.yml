@@ -1,0 +1,62 @@
+name: Build Lumenora Installer ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload_ref:
+        description: Lumenora image to install
+        required: true
+        default: ghcr.io/peter5235252/lumenora:latest
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-installer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Pull Lumenora payload
+        env:
+          PAYLOAD_REF: ${{ inputs.payload_ref || 'ghcr.io/peter5235252/lumenora:latest' }}
+        run: podman pull "$PAYLOAD_REF"
+
+      - name: Build installer environment
+        run: podman build -f installer/Containerfile -t localhost/lumenora-installer:latest installer
+
+      - name: Build graphical installer ISO
+        env:
+          PAYLOAD_REF: ${{ inputs.payload_ref || 'ghcr.io/peter5235252/lumenora:latest' }}
+        run: |
+          mkdir -p output
+          podman run --rm --privileged \
+            --security-opt label=type:unconfined_t \
+            -v "${{ github.workspace }}/output:/output" \
+            -v /var/lib/containers/storage:/var/lib/containers/storage \
+            ghcr.io/osbuild/image-builder-cli:latest \
+            build \
+            --bootc-ref localhost/lumenora-installer:latest \
+            --bootc-installer-payload-ref "$PAYLOAD_REF" \
+            --bootc-default-fs ext4 \
+            bootc-generic-iso
+
+      - name: Upload installer ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumenora-installer-iso
+          path: output/*.iso
+          if-no-files-found: error

@@ -23,12 +23,15 @@ to the software already provided by Wayblue and ML4W.
 
 ## User setup and security
 
-Lumenora doesn't create a `lumen` user or bake a Lumenora password into the
-image. Username and password setup belongs to the installer.
+Lumenora doesn't create a user or bake any username or password into the image.
+This repository doesn't include an installer. The installer or image-building
+workflow must collect the desired username and password from the user and
+apply them during installation.
 
-The repository's `config.toml` uses `root` / `root` as the installer default,
-as requested. Don't deploy those defaults unchanged. Set a unique username
-and strong password in the installer before first boot.
+Do not use a shared default account or password. For bootc-image-builder or
+another external installer, provide the user customization through that
+installer's private configuration or interactive setup, and don't commit that
+configuration to this repository.
 
 ## Building locally
 

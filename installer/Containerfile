@@ -1,0 +1,54 @@
+FROM quay.io/fedora/fedora-bootc:44
+
+RUN dnf install -y \
+    anaconda \
+    anaconda-install-img-deps \
+    anaconda-dracut \
+    dracut-config-generic \
+    dracut-network \
+    net-tools \
+    grub2-efi-x64-cdboot \
+    grub2-common \
+    grub2-pc-modules \
+    isomd5sum \
+    jq \
+    podman \
+    plymouth \
+    default-fonts-core-sans \
+    default-fonts-other-sans \
+    google-noto-sans-cjk-fonts \
+    python3 \
+    python-unversioned-command \
+    squashfs-tools \
+    xorriso \
+    && dnf clean all
+
+RUN mkdir -p /boot/efi && cp -ra /usr/lib/efi/*/*/EFI /boot/efi
+
+RUN mkdir -p /usr/lib/image-builder/bootc
+COPY iso.yaml /usr/lib/image-builder/bootc/iso.yaml
+
+# Anaconda will install the Lumenora payload supplied by the image-builder job.
+COPY interactive-defaults.ks /usr/share/anaconda/interactive-defaults.ks
+
+RUN echo "install:x:0:0:root:/root:/usr/libexec/anaconda/run-anaconda" >> /etc/passwd && \
+    echo "install::14438:0:99999:7:::" >> /etc/shadow && \
+    passwd -d root && \
+    mv /usr/share/anaconda/list-harddrives-stub /usr/bin/list-harddrives && \
+    mv /etc/yum.repos.d /etc/anaconda.repos.d && \
+    ln -s /lib/systemd/system/anaconda.target /etc/systemd/system/default.target && \
+    rm -f /usr/lib/systemd/system-generators/systemd-gpt-auto-generator && \
+    ln -s /lib/systemd/system/anaconda-shell@.service /usr/lib/systemd/system/autovt@.service && \
+    mkdir -p /usr/lib/systemd/logind.conf.d
+
+COPY anaconda-shell.conf /usr/lib/systemd/logind.conf.d/anaconda-shell.conf
+
+RUN mkdir "$(realpath /root)" && \
+    kernel="$(kernel-install list --json pretty | jq -r '.[] | select(.has_kernel == true) | .version' | head -n 1)" && \
+    test -n "$kernel" && \
+    DRACUT_NO_XATTR=1 dracut --force -v --zstd --reproducible --no-hostonly \
+      --add anaconda "/usr/lib/modules/$kernel/initramfs.img" "$kernel"
+
+RUN mkdir -p /etc/systemd/user/pipewire.service.d /etc/systemd/user/pipewire.socket.d
+COPY allowroot.conf /etc/systemd/user/pipewire.service.d/allowroot.conf
+COPY allowroot.conf /etc/systemd/user/pipewire.socket.d/allowroot.conf

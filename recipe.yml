@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: lumenora
-description: A plug-and-play Hyprland distro based on Wayblue and ML4W
+description: A plug-and-play Hyprland gaming distro based on Wayblue and the rolling ML4W dotfiles
 base-image: ghcr.io/wayblueorg/hyprland
 image-version: latest
 
@@ -10,6 +10,8 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/llamatron/bazaar/repo/fedora-44/llamatron-bazaar-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/chronoscrat/oh-my-posh/repo/fedora-44/chronoscrat-oh-my-posh-fedora-44.repo
     install:
+      - curl
+      - tar
       - fastfetch
       - hyprpaper
       - swww

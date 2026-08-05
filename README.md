@@ -1,26 +1,27 @@
 # Lumenora
 
-Lumenora is a Fedora Atomic desktop image built with BlueBuild. It uses the
-latest Wayblue Hyprland image as its base and bundles an ML4W-based Hyprland
-desktop configuration with Lumenora branding.
+Lumenora is a Fedora Atomic gaming desktop image built with BlueBuild. It uses the
+latest Wayblue Hyprland image and the rolling ML4W Hyprland dotfiles, with
+Lumenora branding and gaming-focused tools.
 
 ## What it is based on
 
 - Fedora Atomic through [Wayblue](https://github.com/wayblueorg/wayblue)
 - Wayblue's Hyprland image
-- [ML4W](https://github.com/mylinuxforwork/dotfiles) Hyprland dotfiles and tools
+- [ML4W](https://github.com/mylinuxforwork/dotfiles) rolling dotfiles from the upstream `main` branch
 - [BlueBuild](https://blue-build.org/) for image generation
 - Fedora's Anaconda installer and unified [Image Builder](https://osbuild.org/docs/developer-guide/projects/image-builder/)
 
-The recipe tracks Wayblue's `latest` image tag. This follows the current
-upstream Fedora Atomic and Wayblue base, but upstream changes should still be
-tested before deployment.
+The image build downloads the current ML4W rolling `main` branch into
+`/etc/skel` each time it builds. This means ML4W updates are picked up by the
+next image build. The bundled files remain as a fallback for offline inspection
+and local development.
 
-## Included software
+## Gaming and desktop software
 
-Fastfetch, Hyprpaper, Swww, Bazaar Store, Distrobox, MangoHud, GameMode,
-Quickshell, SwayNotificationCenter, and Oh My Posh are installed in addition
-to the software already provided by Wayblue and ML4W.
+Lumenora includes MangoHud, GameMode, Distrobox, Quickshell, Fastfetch,
+Hyprpaper, Swww, Bazaar Store, SwayNotificationCenter, and Oh My Posh, in
+addition to the software provided by Wayblue and ML4W.
 
 ## User setup and security
 
@@ -43,6 +44,9 @@ the package and base-image choices in `recipe.yml`:
 ```bash
 podman build -t lumenora:latest -f Containerfile .
 ```
+
+Both build paths fetch ML4W's rolling `main` branch during the build, so they
+require network access.
 
 ## Graphical installer ISO
 
@@ -103,8 +107,8 @@ required.
 - `installer/iso.yaml` defines the boot menu and ISO label.
 - `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.
 - `.github/workflows/installer.yml` builds and uploads the graphical ISO.
-- `files/etc/skel` contains the default user configuration.
-- `scripts/rebrand.sh` applies Lumenora branding and permissions at build time.
+- `files/etc/skel` contains the fallback user configuration.
+- `scripts/rebrand.sh` syncs rolling ML4W files, applies Lumenora branding, and fixes permissions.
 
 ## Upstream work
 

@@ -1,6 +1,7 @@
 name: Build Lumenora
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main

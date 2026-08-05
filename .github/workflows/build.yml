@@ -24,8 +24,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Configure Cosign password
+        shell: bash
+        env:
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: echo "COSIGN_PASSWORD=$COSIGN_PASSWORD" >> "$GITHUB_ENV"
       - name: Build and Push Lumenora
         uses: blue-build/github-action@v1
+        env:
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
         with:
           recipe: recipe.yml
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}

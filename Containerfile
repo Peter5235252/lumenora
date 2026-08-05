@@ -11,15 +11,7 @@ RUN dnf copr enable -y llamatron/bazaar && \
 COPY files/etc /etc
 COPY scripts/rebrand.sh /tmp/rebrand.sh
 
-RUN set -eux; \
-    ml4w_tmp="$(mktemp -d)"; \
-    curl -fsSL https://github.com/mylinuxforwork/dotfiles/archive/refs/heads/main.tar.gz | tar -xz -C "$ml4w_tmp"; \
-    cp -a "$ml4w_tmp/dotfiles-main/dotfiles/." /etc/skel/; \
-    rm -rf "$ml4w_tmp"; \
-    bash /tmp/rebrand.sh
-
-RUN sed -i 's/^NAME=.*/NAME="Lumenora"/' /usr/lib/os-release && \
-    sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="Lumenora"/' /usr/lib/os-release && \
+RUN bash /tmp/rebrand.sh && \
     find /etc/skel/.config/ -type f -name "*.sh" -exec chmod +x {} + && \
     find /etc/skel/.config/ml4w/scripts/ -type f -exec chmod +x {} + && \
     find /etc/skel/.config/hypr/scripts/ -type f -exec chmod +x {} +

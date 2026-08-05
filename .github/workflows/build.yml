@@ -8,12 +8,17 @@ on:
   schedule:
     - cron: '0 0 * * 0'
 
+concurrency:
+  group: lumenora-build
+  cancel-in-progress: true
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
+      id-token: write
 
     steps:
       - name: Checkout

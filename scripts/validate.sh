@@ -16,7 +16,7 @@ if command -v ruby >/dev/null 2>&1; then
         .github/workflows/installer.yml \
         .github/workflows/runner-diagnostic.yml \
         .github/workflows/validate.yml \
-        recipe.yml \
+        recipes/recipe.yml \
         installer/iso.yaml
 else
     echo "Ruby is unavailable; YAML parsing will run in CI."

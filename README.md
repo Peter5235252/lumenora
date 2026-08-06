@@ -34,12 +34,12 @@ No credentials are committed to this repository.
 Install BlueBuild, then run:
 
 ```bash
-bluebuild generate recipe.yml -o Containerfile.generated
-bluebuild build recipe.yml
+bluebuild generate recipes/recipe.yml -o Containerfile.generated
+bluebuild build recipes/recipe.yml
 ```
 
 The committed `Containerfile` is retained for direct Podman builds and mirrors
-the package and base-image choices in `recipe.yml`:
+the package and base-image choices in `recipes/recipe.yml`:
 
 ```bash
 podman build -t lumenora:latest -f Containerfile .
@@ -113,7 +113,7 @@ required.
 
 ## Project layout
 
-- `recipe.yml` is the canonical BlueBuild recipe.
+- `recipes/recipe.yml` is the canonical BlueBuild recipe.
 - `Containerfile` is the matching direct-build definition.
 - `installer/Containerfile` defines the Anaconda installer environment.
 - `installer/iso.yaml` defines the boot menu and ISO label.

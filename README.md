@@ -88,9 +88,21 @@ The normal workflow builds and publishes the Lumenora image on pushes to
 `main` and weekly. The installer workflow runs manually or when a version tag
 such as `v1.0.0` is pushed. It publishes the ISO as a GitHub Actions artifact.
 
-The repository needs a `SIGNING_SECRET` GitHub Actions secret containing the
-Cosign private key expected by the BlueBuild action. The public key is kept in
-`keys/cosign.pub`.
+The repository needs these GitHub Actions secrets for image publishing:
+
+- `SIGNING_SECRET`: the Cosign private key expected by the BlueBuild action.
+- `COSIGN_PASSWORD`: the password protecting that private key. Leave it empty
+  only if the key is intentionally unencrypted.
+
+The public verification key is stored identically at `cosign.pub` (the path
+used by BlueBuild) and `keys/cosign.pub` (the documented distribution path).
+Run `bash scripts/validate.sh` to verify that they remain synchronized. The
+private key must never be committed to this repository.
+
+The build currently follows rolling upstream inputs (`latest` Wayblue,
+ML4W `main`, and the latest Image Builder CLI). This keeps the image current
+but is not reproducible; pin those inputs to immutable tags or digests before
+using Lumenora for production deployments.
 
 ## Installing or rebasing
 

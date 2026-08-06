@@ -120,7 +120,7 @@ required.
 - `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.
 - `.github/workflows/installer.yml` builds and uploads the graphical ISO.
 - `files/etc/skel` contains the fallback user configuration.
-- `scripts/rebrand.sh` syncs rolling ML4W files, applies Lumenora branding, and fixes permissions.
+- `files/scripts/rebrand.sh` syncs rolling ML4W files, applies Lumenora branding, and fixes permissions.
 
 ## Upstream work
 

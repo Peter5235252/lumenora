@@ -10,7 +10,7 @@ RUN dnf copr enable -y kylegospo/bazaar && \
     dnf clean all
 
 COPY files/etc /etc
-COPY scripts/rebrand.sh /tmp/rebrand.sh
+COPY files/scripts/rebrand.sh /tmp/rebrand.sh
 
 RUN bash /tmp/rebrand.sh && \
     find /etc/skel/.config/ -type f -name "*.sh" -exec chmod +x {} + && \

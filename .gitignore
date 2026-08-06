@@ -2,3 +2,4 @@ output/
 cosign.key
 *.tar
 *.iso
+/.bluebuild-scripts_*/

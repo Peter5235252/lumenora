@@ -1,5 +1,8 @@
 # Lumenora
 
+[![GitHub release](https://img.shields.io/github/v/release/peter5235252/lumenora)](https://github.com/peter5235252/lumenora/releases)
+[![Image build](https://github.com/peter5235252/lumenora/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/peter5235252/lumenora/actions/workflows/build.yml)
+
 Lumenora is a Fedora Atomic gaming desktop image built with BlueBuild. It uses the
 latest Wayblue Hyprland image and the rolling ML4W Hyprland dotfiles, with
 Lumenora branding and gaming-focused tools.
@@ -86,13 +89,16 @@ using it on a real machine.
 
 The normal workflow builds and publishes the Lumenora image on pushes to
 `main` and weekly. The installer workflow runs manually or when a version tag
-such as `v1.0.0` is pushed. It publishes the ISO as a GitHub Actions artifact.
+such as `v0.5.0` is pushed. It publishes the ISO as a GitHub Actions artifact.
 
-The repository needs these GitHub Actions secrets for image publishing:
+The repository needs one GitHub Actions secret for image publishing:
 
-- `SIGNING_SECRET`: the Cosign private key expected by the BlueBuild action.
-- `COSIGN_PASSWORD`: the password protecting that private key. Leave it empty
-  only if the key is intentionally unencrypted.
+- `SIGNING_SECRET`: the Cosign private key expected by the BlueBuild action,
+  supplied as raw PEM.
+
+The current key is intentionally unencrypted (passwordless), so no
+`COSIGN_PASSWORD` secret is configured — BlueBuild always invokes Cosign with
+an empty password and would reject an encrypted key.
 
 The public verification key is stored identically at `cosign.pub` (the path
 used by BlueBuild) and `keys/cosign.pub` (the documented distribution path).
@@ -104,12 +110,23 @@ ML4W `main`, and the latest Image Builder CLI). This keeps the image current
 but is not reproducible; pin those inputs to immutable tags or digests before
 using Lumenora for production deployments.
 
+## Releases
+
+- `v0.5.0` — first public release. Ships the graphical installer ISO built
+  against [`ghcr.io/peter5235252/lumenora:latest`](https://github.com/peter5235252/lumenora/pkgs/container/lumenora)
+  (currently Fedora 44 based). The ISO is attached to the release and is also
+  available as a workflow artifact.
+
+Download the ISO from the release, then test it in a VM (GNOME Boxes on a
+Fedora workstation, or virt-manager/QEMU elsewhere) before using it on real
+hardware — bootc/Anaconda installations currently have a known
+`systemd-remount-fs.service` issue in Image Builder.
+
 ## Installing or rebasing
 
 Use the graphical ISO for a fresh installation. For an existing Fedora Atomic
-system, follow Wayblue's rebase instructions for your hardware. Use the regular
-Hyprland image for non-NVIDIA systems or the matching NVIDIA variant when
-required.
+system, rebase with `bootc switch ghcr.io/peter5235252/lumenora:latest` (or use
+the matching NVIDIA payload variant when required).
 
 ## Project layout
 
@@ -119,6 +136,7 @@ required.
 - `installer/iso.yaml` defines the boot menu and ISO label.
 - `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.
 - `.github/workflows/installer.yml` builds and uploads the graphical ISO.
+- `CHANGELOG.md` tracks releases.
 - `files/etc/skel` contains the fallback user configuration.
 - `files/scripts/rebrand.sh` syncs rolling ML4W files, applies Lumenora branding, and fixes permissions.
 

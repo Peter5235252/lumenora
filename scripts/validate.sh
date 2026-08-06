@@ -17,6 +17,8 @@ if command -v ruby >/dev/null 2>&1; then
         .github/workflows/runner-diagnostic.yml \
         .github/workflows/validate.yml \
         recipes/recipe.yml \
+        recipes/recipe-nvidia.yml \
+        recipes/recipe-nvidia-open.yml \
         installer/iso.yaml
 else
     echo "Ruby is unavailable; YAML parsing will run in CI."

@@ -1,30 +1,49 @@
 # Lumenora
 
+> **EARLY ALPHA**
+>
+> Lumenora is an early alpha. Expect bugs, stability issues, and missing
+> features. It is not recommended as a daily driver yet. Test it in a VM
+> before using it on real hardware.
+
 [![GitHub release](https://img.shields.io/github/v/release/peter5235252/lumenora)](https://github.com/peter5235252/lumenora/releases)
 [![Image build](https://github.com/peter5235252/lumenora/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/peter5235252/lumenora/actions/workflows/build.yml)
 
-Lumenora is a Fedora Atomic gaming desktop image built with BlueBuild. It uses the
-latest Wayblue Hyprland image and the rolling ML4W Hyprland dotfiles, with
-Lumenora branding and gaming-focused tools.
+Lumenora is a gaming-focused desktop image built on Fedora Atomic (bootc)
+with KDE Plasma, built with BlueBuild. It ships a gaming-oriented stack out of
+the box and detects the GPU at first boot to select the right drivers.
 
 ## What it is based on
 
-- Fedora Atomic through [Wayblue](https://github.com/wayblueorg/wayblue)
-- Wayblue's Hyprland image
-- [ML4W](https://github.com/mylinuxforwork/dotfiles) rolling dotfiles from the upstream `main` branch
+- Fedora Atomic Desktops KDE Plasma (Kinoite), Fedora 44
 - [BlueBuild](https://blue-build.org/) for image generation
-- Fedora's Anaconda installer and unified [Image Builder](https://osbuild.org/docs/developer-guide/projects/image-builder/)
-
-The image build downloads the current ML4W rolling `main` branch into
-`/etc/skel` each time it builds. This means ML4W updates are picked up by the
-next image build. The bundled files remain as a fallback for offline inspection
-and local development.
+- [bootc](https://containers.github.io/bootc/) for immutable, OCI-based
+  system management
+- Fedora's Anaconda installer and unified Image Builder
 
 ## Gaming and desktop software
 
-Lumenora includes MangoHud, GameMode, Distrobox, Quickshell, Fastfetch,
-Hyprpaper, Swww, Bazaar Store, SwayNotificationCenter, and Oh My Posh, in
-addition to the software provided by Wayblue and ML4W.
+Lumenora includes GameMode, MangoHud, Gamescope, Distrobox, Bazaar Store,
+Oh My Posh, Fastfetch, and Eza, plus gaming flatpaks (Steam, Lutris, Heroic,
+Bottles, OBS) installed system-wide from Flathub. Kernel drivers for Intel and
+AMD GPUs come from the open-source drivers already built into the Linux
+kernel; no driver packages are layered for them.
+
+## GPU driver handling
+
+Lumenora is immutable (bootc): packages cannot be layered at runtime with
+standard `dnf`. Instead:
+
+- **Intel/AMD**: nothing is installed; the open kernel drivers are used.
+- **NVIDIA**: a first-boot service detects the GPU with `lspci` and rebases
+  the system to the NVIDIA variant image
+  (`ghcr.io/peter5235252/lumenora-nvidia`) using `bootc switch`, then
+  reboots. The NVIDIA image is built with the same BlueBuild recipe plus the
+  akmods module (prebuilt kmods), avoiding runtime package layering.
+- To disable the automatic switch, add the kernel argument
+  `lumenora-no-auto-gpu` (e.g. with `bootc`'s kernel arg support or at
+  install time). Manual rebase to the NVIDIA image:
+  `sudo bootc switch ghcr.io/peter5235252/lumenora-nvidia:latest`.
 
 ## User setup and security
 
@@ -48,8 +67,8 @@ the package and base-image choices in `recipes/recipe.yml`:
 podman build -t lumenora:latest -f Containerfile .
 ```
 
-Both build paths fetch ML4W's rolling `main` branch during the build, so they
-require network access.
+Both build paths produce images for local testing; the NVIDIA variant is
+defined in `recipes/recipe-nvidia.yml`.
 
 ## Graphical installer ISO
 
@@ -87,9 +106,10 @@ using it on a real machine.
 
 ## GitHub Actions
 
-The normal workflow builds and publishes the Lumenora image on pushes to
-`main` and weekly. The installer workflow runs manually or when a version tag
-such as `v0.5.0` is pushed. It publishes the ISO as a GitHub Actions artifact.
+The normal workflow builds and publishes the Lumenora images (base and
+NVIDIA) on pushes to `main` and weekly. The installer workflow runs manually
+or when a version tag such as `v0.6.0-alpha` is pushed. It publishes the ISO
+as a GitHub Actions artifact.
 
 The repository needs one GitHub Actions secret for image publishing:
 
@@ -105,43 +125,52 @@ used by BlueBuild) and `keys/cosign.pub` (the documented distribution path).
 Run `bash scripts/validate.sh` to verify that they remain synchronized. The
 private key must never be committed to this repository.
 
-The build currently follows rolling upstream inputs (`latest` Wayblue,
-ML4W `main`, and the latest Image Builder CLI). This keeps the image current
-but is not reproducible; pin those inputs to immutable tags or digests before
-using Lumenora for production deployments.
+The build currently follows rolling upstream inputs (`44` Kinoite, latest
+Image Builder CLI). This keeps the image current but is not reproducible; pin
+those inputs to immutable tags or digests before using Lumenora for
+production deployments.
 
 ## Releases
 
-- `v0.5.0` — first public release. Ships the graphical installer ISO built
-  against [`ghcr.io/peter5235252/lumenora:latest`](https://github.com/peter5235252/lumenora/pkgs/container/lumenora)
-  (currently Fedora 44 based). The ISO is attached to the release and is also
-  available as a workflow artifact.
-
-Download the ISO from the release, then test it in a VM (GNOME Boxes on a
-Fedora workstation, or virt-manager/QEMU elsewhere) before using it on real
-hardware — bootc/Anaconda installations currently have a known
-`systemd-remount-fs.service` issue in Image Builder.
+- `v0.6.0-alpha` — first KDE Plasma edition with automatic NVIDIA driver
+  handling. ISO attached to the release and available as a workflow artifact.
+- `v0.5.0` — archived Hyprland/Wayblue/ML4W edition. Moved to the
+  `legacy-hyprland` branch; no longer under active development.
 
 ## Installing or rebasing
 
 Use the graphical ISO for a fresh installation. For an existing Fedora Atomic
-system, rebase with `bootc switch ghcr.io/peter5235252/lumenora:latest` (or use
-the matching NVIDIA payload variant when required).
+system, rebase with:
+
+```bash
+sudo bootc switch ghcr.io/peter5235252/lumenora:latest
+```
+
+The NVIDIA variant is selected automatically at first boot when an NVIDIA
+GPU is detected (see GPU driver handling above).
 
 ## Project layout
 
-- `recipes/recipe.yml` is the canonical BlueBuild recipe.
+- `recipes/recipe.yml` is the canonical BlueBuild recipe (KDE base).
+- `recipes/recipe-nvidia.yml` adds the NVIDIA driver variant.
 - `Containerfile` is the matching direct-build definition.
 - `installer/Containerfile` defines the Anaconda installer environment.
 - `installer/iso.yaml` defines the boot menu and ISO label.
 - `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.
+- `.github/workflows/build.yml` builds and signs both images.
 - `.github/workflows/installer.yml` builds and uploads the graphical ISO.
+- `files/usr/lib/systemd/system/lumenora-gpu-detect.service` performs
+  first-boot GPU detection and the NVIDIA rebase.
+- `files/usr/local/bin/lumenora-gpu-detect.sh` implements the detection logic.
+- `files/etc/skel` contains the default user configuration (KDE, shells,
+  MangoHud, GameMode).
+- `files/scripts/rebrand.sh` applies Lumenora branding and fixes permissions.
 - `CHANGELOG.md` tracks releases.
-- `files/etc/skel` contains the fallback user configuration.
-- `files/scripts/rebrand.sh` syncs rolling ML4W files, applies Lumenora branding, and fixes permissions.
+- `todo.md` tracks the migration plan.
 
 ## Upstream work
 
-Lumenora includes configuration and software derived from ML4W and Wayblue.
-Check their repositories for applicable licenses and attribution terms before
-redistributing modified images.
+Lumenora includes configuration and software derived from Fedora Atomic
+Desktops, BlueBuild, Universal Blue (akmods), and the Fedora Image Builder
+tooling. Check their repositories for applicable licenses and attribution
+terms before redistributing modified images.

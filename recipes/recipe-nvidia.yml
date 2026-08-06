@@ -1,10 +1,13 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
-name: lumenora
-description: A KDE Plasma gaming distro built on Fedora Atomic with automatic GPU driver handling
+name: lumenora-nvidia
+description: Lumenora KDE Plasma gaming distro with the NVIDIA driver (RPM Fusion akmods)
 base-image: quay.io/fedora-ostree-desktops/kinoite
 image-version: "44"
 
 modules:
+  - type: akmods
+    nvidia-driver: true
+
   - type: rpm-ostree
     repos:
       - https://copr.fedorainfracloud.org/coprs/kylegospo/bazaar/repo/fedora-44/kylegospo-bazaar-fedora-44.repo

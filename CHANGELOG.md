@@ -1,6 +1,23 @@
 # Changelog
 
+## v0.6.0-alpha - unreleased
+
+Early-alpha KDE Plasma edition. Complete pivot from Hyprland to KDE Plasma:
+
+- Base image changed to Fedora Atomic KDE Plasma (Kinoite) 44.
+- Removed all Hyprland/Wayblue/ML4W dotfiles, packages, and scripts.
+- Gaming stack: GameMode, MangoHud, Gamescope, Steam/Lutris/Heroic/Bottles/OBS
+  flatpaks, Bazaar Store, Oh My Posh, Eza.
+- Automatic GPU driver handling at first boot: NVIDIA GPUs trigger a
+  `bootc switch` rebase to `lumenora-nvidia`; Intel/AMD use the built-in
+  open drivers. Escape hatch: `lumenora-no-auto-gpu` kernel argument.
+- `lumenora-nvidia` image built with the akmods module (prebuilt kmods) so no
+  runtime package layering is needed on the immutable system.
+
 ## v0.5.0 - 2026-08-06
+
+Archived Hyprland/Wayblue/ML4W edition. Moved to the `legacy-hyprland`
+branch; not under active development.
 
 First public release with a graphical installer ISO.
 

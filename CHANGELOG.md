@@ -9,9 +9,13 @@ Early-alpha KDE Plasma edition. Complete pivot from Hyprland to KDE Plasma:
 - Gaming stack: GameMode, MangoHud, Gamescope, Steam/Lutris/Heroic/Bottles/OBS
   flatpaks, Bazaar Store, Oh My Posh, Eza.
 - Automatic GPU driver handling at first boot: NVIDIA GPUs trigger a
-  `bootc switch` rebase to `lumenora-nvidia`; Intel/AMD use the built-in
-  open drivers. Escape hatch: `lumenora-no-auto-gpu` kernel argument.
-- `lumenora-nvidia` image built with the akmods module (prebuilt kmods) so no
+  `bootc switch` rebase to the matching NVIDIA variant; Intel/AMD use the
+  built-in open drivers. Escape hatch: `lumenora-no-auto-gpu` kernel argument.
+- Generation-aware NVIDIA selection: `lumenora-nvidia` (proprietary driver
+  flavor) targeted at Maxwell/Pascal/Volta/Turing-Ada, and
+  `lumenora-nvidia-open` (open kernel flavor) for Turing and newer GPUs,
+  chosen by PCI device ID (threshold `0x1E00`).
+- NVIDIA variant images built with the akmods module (prebuilt kmods) so no
   runtime package layering is needed on the immutable system.
 
 ## v0.5.0 - 2026-08-06

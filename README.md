@@ -36,13 +36,20 @@ standard `dnf`. Instead:
 
 - **Intel/AMD**: nothing is installed; the open kernel drivers are used.
 - **NVIDIA**: a first-boot service detects the GPU with `lspci` and rebases
-  the system to the NVIDIA variant image
-  (`ghcr.io/peter5235252/lumenora-nvidia`) using `bootc switch`, then
-  reboots. The NVIDIA image is built with the same BlueBuild recipe plus the
-  akmods module (prebuilt kmods), avoiding runtime package layering.
+  the system to an NVIDIA variant image using `bootc switch`, then reboots.
+  The NVIDIA images are built with the same BlueBuild recipe plus the akmods
+  module (prebuilt kmods), avoiding runtime package layering. The variant is
+  chosen by GPU generation:
+  - `ghcr.io/peter5235252/lumenora-nvidia` — driver **proprietary** flavor,
+    for Maxwell, Pascal, Volta, and Turing through Ada GPUs.
+  - `ghcr.io/peter5235252/lumenora-nvidia-open` — driver **open kernel**
+    flavor for Turing and newer GPUs (which defaults to the open driver).
+  - The detection script uses the PCI device ID (`lspci`) with a Turing
+    threshold of `0x1E00`: IDs at or above that boundary select the open
+    flavor, lower IDs the proprietary flavor.
 - To disable the automatic switch, add the kernel argument
   `lumenora-no-auto-gpu` (e.g. with `bootc`'s kernel arg support or at
-  install time). Manual rebase to the NVIDIA image:
+  install time). Manual rebase to a specific NVIDIA image:
   `sudo bootc switch ghcr.io/peter5235252/lumenora-nvidia:latest`.
 
 ## User setup and security
@@ -67,8 +74,9 @@ the package and base-image choices in `recipes/recipe.yml`:
 podman build -t lumenora:latest -f Containerfile .
 ```
 
-Both build paths produce images for local testing; the NVIDIA variant is
-defined in `recipes/recipe-nvidia.yml`.
+Both build paths produce images for local testing; the NVIDIA variants are
+defined in `recipes/recipe-nvidia.yml` (proprietary flavor) and
+`recipes/recipe-nvidia-open.yml` (open kernel flavor).
 
 ## Graphical installer ISO
 
@@ -106,8 +114,8 @@ using it on a real machine.
 
 ## GitHub Actions
 
-The normal workflow builds and publishes the Lumenora images (base and
-NVIDIA) on pushes to `main` and weekly. The installer workflow runs manually
+The normal workflow builds and publishes the Lumenora images (base and both
+NVIDIA variants) on pushes to `main` and weekly. The installer workflow runs manually
 or when a version tag such as `v0.6.0-alpha` is pushed. It publishes the ISO
 as a GitHub Actions artifact.
 
@@ -152,12 +160,13 @@ GPU is detected (see GPU driver handling above).
 ## Project layout
 
 - `recipes/recipe.yml` is the canonical BlueBuild recipe (KDE base).
-- `recipes/recipe-nvidia.yml` adds the NVIDIA driver variant.
+- `recipes/recipe-nvidia.yml` and `recipes/recipe-nvidia-open.yml` add the
+  NVIDIA driver variants (proprietary and open kernel flavors).
 - `Containerfile` is the matching direct-build definition.
 - `installer/Containerfile` defines the Anaconda installer environment.
 - `installer/iso.yaml` defines the boot menu and ISO label.
 - `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.
-- `.github/workflows/build.yml` builds and signs both images.
+- `.github/workflows/build.yml` builds and signs all three images.
 - `.github/workflows/installer.yml` builds and uploads the graphical ISO.
 - `files/usr/lib/systemd/system/lumenora-gpu-detect.service` performs
   first-boot GPU detection and the NVIDIA rebase.

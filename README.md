@@ -1,5 +1,11 @@
 # Lumenora
 
+> **LEGACY BRANCH — Hyprland edition (v0.5.0)**
+>
+> This branch archives the experimental Hyprland/Wayblue/ML4W edition of
+> Lumenora. It is **no longer under active development**: `main` now builds the
+> KDE Plasma edition. Use this branch only as a historical reference.
+
 [![GitHub release](https://img.shields.io/github/v/release/peter5235252/lumenora)](https://github.com/peter5235252/lumenora/releases)
 [![Image build](https://github.com/peter5235252/lumenora/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/peter5235252/lumenora/actions/workflows/build.yml)
 

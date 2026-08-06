@@ -45,6 +45,7 @@ jobs:
           mkdir -p output
           sudo podman run --rm --privileged \
             --security-opt label=type:unconfined_t \
+            --workdir /output \
             -v "${{ github.workspace }}/output:/output" \
             -v /var/lib/containers/storage:/var/lib/containers/storage \
             ghcr.io/osbuild/image-builder-cli:latest \
@@ -58,5 +59,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lumenora-installer-iso
-          path: output/*.iso
+          path: output/**/*.iso
           if-no-files-found: error

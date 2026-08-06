@@ -23,15 +23,16 @@ modules:
       - eza
 
   - type: default-flatpaks
-    notify: true
-    system:
-      install:
-        - org.freedesktop.Platform.VulkanLayer.MangoHud
-        - com.valvesoftware.Steam
-        - net.lutris.Lutris
-        - com.heroicgameslauncher.hgl
-        - com.usebottles.bottles
-        - com.obsproject.Studio
+    configurations:
+      - scope: system
+        notify: true
+        install:
+          - org.freedesktop.Platform.VulkanLayer.MangoHud
+          - com.valvesoftware.Steam
+          - net.lutris.Lutris
+          - com.heroicgameslauncher.hgl
+          - com.usebottles.bottles
+          - com.obsproject.Studio
 
   - type: files
     files:

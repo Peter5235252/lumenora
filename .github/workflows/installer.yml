@@ -28,22 +28,22 @@ jobs:
           sudo apt-get install -y podman
 
       - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u "${{ github.actor }}" --password-stdin
 
       - name: Pull Lumenora payload
         env:
           PAYLOAD_REF: ${{ inputs.payload_ref || 'ghcr.io/peter5235252/lumenora:latest' }}
-        run: podman pull "$PAYLOAD_REF"
+        run: sudo podman pull "$PAYLOAD_REF"
 
       - name: Build installer environment
-        run: podman build -f installer/Containerfile -t localhost/lumenora-installer:latest installer
+        run: sudo podman build -f installer/Containerfile -t localhost/lumenora-installer:latest installer
 
       - name: Build graphical installer ISO
         env:
           PAYLOAD_REF: ${{ inputs.payload_ref || 'ghcr.io/peter5235252/lumenora:latest' }}
         run: |
           mkdir -p output
-          podman run --rm --privileged \
+          sudo podman run --rm --privileged \
             --security-opt label=type:unconfined_t \
             -v "${{ github.workspace }}/output:/output" \
             -v /var/lib/containers/storage:/var/lib/containers/storage \

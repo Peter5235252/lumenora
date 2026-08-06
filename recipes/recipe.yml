@@ -40,7 +40,8 @@ modules:
 
   - type: systemd
     system:
-      - lumenora-gpu-detect.service
+      enabled:
+        - lumenora-gpu-detect.service
 
   - type: script
     scripts:

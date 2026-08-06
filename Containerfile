@@ -1,6 +1,7 @@
 FROM ghcr.io/wayblueorg/hyprland:latest
 
-RUN dnf copr enable -y llamatron/bazaar && \
+RUN dnf copr enable -y kylegospo/bazaar && \
+    dnf copr enable -y alebastr/sway-extras && \
     dnf copr enable -y chronoscrat/oh-my-posh && \
     dnf install -y --skip-unavailable \
     curl tar fastfetch hyprpaper swww bazaar-store distrobox \

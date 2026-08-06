@@ -7,7 +7,8 @@ image-version: latest
 modules:
   - type: rpm-ostree
     repos:
-      - https://copr.fedorainfracloud.org/coprs/llamatron/bazaar/repo/fedora-44/llamatron-bazaar-fedora-44.repo
+      - https://copr.fedorainfracloud.org/coprs/kylegospo/bazaar/repo/fedora-44/kylegospo-bazaar-fedora-44.repo
+      - https://copr.fedorainfracloud.org/coprs/alebastr/sway-extras/repo/fedora-44/alebastr-sway-extras-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/chronoscrat/oh-my-posh/repo/fedora-44/chronoscrat-oh-my-posh-fedora-44.repo
     install:
       - curl

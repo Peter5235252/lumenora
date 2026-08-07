@@ -7,8 +7,13 @@ image-version: "44"
 modules:
   - type: script
     scripts:
+      - update-os.sh
+
+  - type: script
+    scripts:
       - swap-ogc-kernel.sh
       - force-systemd-boot.sh
+      - lumen-theme.sh
 
   - type: rpm-ostree
     repos:

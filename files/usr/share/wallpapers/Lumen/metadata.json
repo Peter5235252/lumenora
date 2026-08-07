@@ -1,0 +1,19 @@
+{
+    "KPlugin": {
+        "Id": "Lumen",
+        "Name": "Lumen",
+        "Name[hu]": "Lumen",
+        "Description": "Deep space nebula (Tarantula Nebula) — Lumenora default wallpaper",
+        "Authors": [
+            {
+                "Email": "peter5235252@users.noreply.github.com",
+                "Name": "Lumenora"
+            }
+        ],
+        "License": "CC-BY-SA-3.0",
+        "Categories": [
+            "Scenery",
+            "Nature"
+        ]
+    }
+}

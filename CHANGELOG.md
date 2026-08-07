@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased
+
+KDE Plasma branding ("Lumen"):
+
+- Switched to the latest KDE Plasma 6.7.x (all packages refreshed from the
+  Fedora 44 updates repo at build time).
+- New "Lumen" deep space blue/purple hybrid theming, applied by default:
+  color scheme (`Lumen.colors`), Plasma global theme
+  (`org.lumenora.lumen.desktop`), and Plasma Style (`desktoptheme/Lumen`),
+  all derived from Breeze dark at build time.
+- Default wallpaper: the Tarantula Nebula image shipped as the `Lumen`
+  wallpaper package and wired in as the fresh-desktop default (look-and-feel
+  defaults + `org.kde.image` plugin default + desktoptheme `plasmarc`).
+- Snappier animations: `AnimationDurationFactor=0.5` in `kdeglobals`.
+- Stock Breeze (light/dark/twilight), Breeze Classic, and the Fedora global
+  themes are removed from the image so only Lumen is selectable. The Breeze
+  window decoration engine stays (it follows the Lumen color scheme).
+- Layout is untouched: the default Plasma panel/widget layout is preserved.
+
 ## v0.6.5-alpha - 2026-08-07
 
 Point release of the alpha line: GRUB replaced by systemd-boot.

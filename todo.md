@@ -1,6 +1,22 @@
 # Lumenora Migration Plan
 
-Status: systemd-boot-only bootloader (v0.6.5-alpha) on `main`.
+Status: Plasma branding ("Lumen") work on `main` (unreleased).
+
+## Phase 6 - KDE Plasma branding "Lumen" (unreleased)
+- [x] Latest KDE Plasma 6.7.x via `files/scripts/update-os.sh` (update step)
+- [x] `Lumen` deep-space blue/purple theme: color scheme, global theme
+      (`org.lumenora.lumen.desktop`), Plasma Style (`desktoptheme/Lumen`),
+      baked from Breeze dark at build time (`files/scripts/lumen-theme.sh`)
+- [x] Tarantula Nebula default wallpaper as `Lumen` wallpaper kpackage
+      (`files/usr/share/wallpapers/Lumen`), wired as the fresh-desktop default
+- [x] Snappier animations (`AnimationDurationFactor=0.5`)
+- [x] Stock Breeze (light/dark/twilight) + Breeze Classic + Fedora global
+      themes removed so only Lumen is selectable; layout untouched
+- [x] New-user defaults via skel `kdeglobals`/`plasmarc` + kde-profile
+- [ ] Local build validation: Plasma >= 6.7.4, Lumen present, stock themes
+      gone, wallpaper default set, OGC kernel + systemd-boot intact
+- [ ] Push to main + green Actions build
+- [ ] VM sanity check (wallpaper + theme render)
 
 ## Phase 5 - systemd-boot only (v0.6.5-alpha)
 - [x] `files/scripts/force-systemd-boot.sh`: install `systemd-boot-unsigned`,

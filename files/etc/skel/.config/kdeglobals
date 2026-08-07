@@ -1,0 +1,6 @@
+[General]
+ColorScheme=Lumen
+
+[KDE]
+AnimationDurationFactor=0.5
+LookAndFeelPackage=org.lumenora.lumen.desktop

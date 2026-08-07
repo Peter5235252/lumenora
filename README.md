@@ -21,6 +21,25 @@ the box and detects the GPU at first boot to select the right drivers.
   system management
 - Fedora's Anaconda installer and unified Image Builder
 
+## Theme ("Lumen")
+
+Lumenora ships a custom deep space blue/purple theme called **Lumen** as the
+default, and removes the stock Breeze (light/dark/twilight), Breeze Classic,
+and Fedora themes so only Lumen is selectable:
+
+- **Color scheme** `/usr/share/color-schemes/Lumen.colors` and matching
+  Plasma Style `/usr/share/plasma/desktoptheme/Lumen`.
+- **Global theme** `org.lumenora.lumen.desktop` applied to new users via
+  `kdeglobals`/`plasmarc` defaults in `/etc/skel` and the kde profile.
+- **Default wallpaper**: the deep-space Tarantula Nebula image, shipped as
+  the `Lumen` wallpaper package and wired in as the fresh-desktop default.
+- **Snappier animations**: `AnimationDurationFactor=0.5`.
+- **Layout identical to stock KDE Plasma** (default panels/widgets).
+- The Breeze window decoration engine remains (it follows the Lumen color
+  scheme); Secure Boot and bootloader sections above still apply.
+- Applied at build time by `files/scripts/lumen-theme.sh`; the image is
+  also brought to the latest KDE Plasma 6.7.x by `files/scripts/update-os.sh`.
+
 ## Kernel
 
 Lumenora replaces the stock Fedora kernel at build time with the gaming-
@@ -233,6 +252,10 @@ GPU is detected (see GPU driver handling above).
   gaming kernel (pinned, version-locked) during the image build.
 - `files/scripts/force-systemd-boot.sh` removes GRUB/shim/bootupd, ships
   `systemd-boot-unsigned`, and sets the systemd-boot install default.
+- `files/scripts/update-os.sh` refreshes all packages (latest Plasma 6.7).
+- `files/scripts/lumen-theme.sh` applies the Lumen theme, removes stock
+  KDE themes, and sets the Nebula wallpaper default.
+- `files/usr/share/wallpapers/Lumen/` ships the default Nebula wallpaper.
 - `files/usr/lib/systemd/system/lumenora-gpu-detect.service` performs
   first-boot GPU detection and the NVIDIA rebase.
 - `files/usr/bin/lumenora-gpu-detect.sh` implements the detection logic.

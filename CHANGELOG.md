@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.7.0-alpha - unreleased
+
+Gaming kernel and bootloader work:
+
+- Replaced the stock Fedora kernel with the OGC gaming kernel
+  (`ghcr.io/opengamingcollective/kernel-packages-fedora`, pinned to
+  `7.1.6-ogc4.1-fc44`) at build time via `files/scripts/swap-ogc-kernel.sh`;
+  the stock kernel packages are erased, the OGC kernel is fetched over OCI
+  and installed, and the kernel is version-locked.
+- NVIDIA variant images now build their kmods against the OGC kernel with
+  the akmods `base: ogc` buildroot, so modules and kernel always match.
+- Documented the systemd-boot path (`bootc install to-disk
+  --bootloader systemd`) alongside the default GRUB installer flow, with
+  Secure Boot caveats.
+- Validated locally: base and `nvidia-open` images build with the OGC
+  kernel; NVIDIA kmods land in
+  `/usr/lib/modules/7.1.6-ogc4.1.fc44.x86_64/extra`.
+
 ## v0.6.0-alpha - 2026-08-07
 
 First KDE Plasma edition. Complete pivot from Hyprland to KDE Plasma:

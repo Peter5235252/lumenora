@@ -21,6 +21,44 @@ the box and detects the GPU at first boot to select the right drivers.
   system management
 - Fedora's Anaconda installer and unified Image Builder
 
+## Kernel
+
+Lumenora replaces the stock Fedora kernel at build time with the gaming-
+optimized kernel from the [Open Game Collective](https://github.com/opengamingcollective/kernel-packages-fedora)
+(`ghcr.io/opengamingcollective/kernel-packages-fedora`, e.g. Bazzite's
+kernel of choice):
+
+- The stock kernel packages are erased and the OGC kernel (currently pinned
+  to `7.1.6-ogc4.1-fc44`) is installed from its OCI distribution, then
+  version-locked with `dnf versionlock` so the image does not drift to a
+  stock kernel on a later update.
+- To update the kernel, bump the `OGC_KERNEL_TAG` pin in
+  `files/scripts/swap-ogc-kernel.sh` and rebuild. The akmods `base: ogc`
+  buildroot is kept in lockstep with that pin.
+- The NVIDIA variant images build their prebuilt kmods against this same
+  kernel version via the akmods module (`base: ogc`), so modules and kernel
+  always match.
+
+## Bootloader
+
+The graphical ISO installs with **GRUB** (Anaconda's default), which keeps
+Fedora's Secure Boot support via the shim. Lumenora is also fully compatible
+with **systemd-boot** through bootc, using the Boot Loader Interface on the
+Fedora 44 composefs backend:
+
+```bash
+sudo bootc install to-disk --bootloader systemd /dev/sda
+```
+
+Notes on the systemd-boot path:
+
+- It is only reachable via `bootc install`; the Anaconda-based ISO currently
+  always deploys GRUB.
+- bootc's systemd-boot deployment is not signed by Fedora's shim chain, so
+  Secure Boot must be disabled (or custom keys enrolled) when using it.
+- Boot entries, kernels, and upgrades are managed automatically through the
+  Boot Loader Interface (no manual menu updates).
+
 ## Gaming and desktop software
 
 Lumenora includes GameMode, MangoHud, Gamescope, Distrobox, Bazaar Store,
@@ -168,6 +206,8 @@ GPU is detected (see GPU driver handling above).
 - `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.
 - `.github/workflows/build.yml` builds and signs all three images.
 - `.github/workflows/installer.yml` builds and uploads the graphical ISO.
+- `files/scripts/swap-ogc-kernel.sh` swaps the stock kernel for the OGC
+  gaming kernel (pinned, version-locked) during the image build.
 - `files/usr/lib/systemd/system/lumenora-gpu-detect.service` performs
   first-boot GPU detection and the NVIDIA rebase.
 - `files/usr/bin/lumenora-gpu-detect.sh` implements the detection logic.

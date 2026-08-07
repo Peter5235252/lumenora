@@ -7,9 +7,6 @@ on:
         description: Lumenora image to install
         required: true
         default: ghcr.io/peter5235252/lumenora:latest
-  push:
-    tags:
-      - "v*"
 
 jobs:
   build-installer:

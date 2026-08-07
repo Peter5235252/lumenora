@@ -27,7 +27,9 @@ Status: KDE Plasma pivot (v0.6.0-alpha) on `kde-migration` branch.
 
 ## Release
 - [x] Push kde-migration, PR into main, merge
-- [ ] Fix akmods module schema error in recipe-nvidia.yml (nvidia-driver
+- [x] Fix akmods module schema error in recipe-nvidia.yml (nvidia-driver
       string + install list) and get green build of all three images
-- [ ] Tag v0.6.0-alpha -> build base + nvidia images + installer ISO
-- [ ] Verify: cosign both images, VM test in GNOME Boxes
+- [x] Cosign verify all three published images (lumenora, lumenora-nvidia,
+      lumenora-nvidia-open) against keys/cosign.pub
+- [ ] Tag v0.6.0-alpha -> installer ISO + GitHub release
+- [ ] VM test in GNOME Boxes (base + nvidia-open)

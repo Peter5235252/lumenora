@@ -31,5 +31,9 @@ Status: KDE Plasma pivot (v0.6.0-alpha) on `kde-migration` branch.
       string + install list) and get green build of all three images
 - [x] Cosign verify all three published images (lumenora, lumenora-nvidia,
       lumenora-nvidia-open) against keys/cosign.pub
-- [ ] Tag v0.6.0-alpha -> installer ISO + GitHub release
+- [x] Tag v0.6.0-alpha -> installer ISO + GitHub release
+      (release published 2026-08-07; ISO uploaded as workflow artifact
+      `lumenora-installer-iso`, ~4.2 GB)
+- [ ] Download the installer ISO artifact and attach it to the v0.6.0-alpha
+      release (artifact expires 2026-11-05)
 - [ ] VM test in GNOME Boxes (base + nvidia-open)

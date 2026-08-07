@@ -11,8 +11,11 @@ Status: OGC kernel work (v0.7.0-alpha) on `main`.
       matching NVIDIA kmods in `/usr/lib/modules/7.1.6-ogc4.1.fc44.x86_64/extra`
 - [x] Document systemd-boot path (`bootc install to-disk --bootloader systemd`)
       + Secure Boot caveats; README/CHANGELOG/todo updated
-- [ ] Push to main, green Actions build of all three images (incl. the
-      `nvidia` proprietary flavor akmods `base: ogc`)
+- [x] Push to main, green Actions build of all three images (incl. the
+      `nvidia` proprietary flavor akmods `base: ogc`): kernel swapped
+      (7.1.6-ogc4.1) in all, kmod-nvidia rpms keyed to the OGC kver
+      (proprietary 580.173.02, open 610.43.03), all three cosign-verified
+      against keys/cosign.pub (2026-08-07)
 - [ ] Tag a new release (ISO optional until v0.6.0-alpha artifact attached)
 - [ ] Track kernel pin drift: bump `OGC_KERNEL_TAG` when OGC releases a
       new 7.1.x kernel build

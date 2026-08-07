@@ -6,7 +6,7 @@ Before=systemd-user-sessions.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/lumenora-gpu-detect.sh
+ExecStart=/usr/bin/lumenora-gpu-detect.sh
 
 [Install]
 WantedBy=multi-user.target

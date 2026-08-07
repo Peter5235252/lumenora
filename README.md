@@ -170,7 +170,7 @@ GPU is detected (see GPU driver handling above).
 - `.github/workflows/installer.yml` builds and uploads the graphical ISO.
 - `files/usr/lib/systemd/system/lumenora-gpu-detect.service` performs
   first-boot GPU detection and the NVIDIA rebase.
-- `files/usr/local/bin/lumenora-gpu-detect.sh` implements the detection logic.
+- `files/usr/bin/lumenora-gpu-detect.sh` implements the detection logic.
 - `files/etc/skel` contains the default user configuration (KDE, shells,
   MangoHud, GameMode).
 - `files/scripts/rebrand.sh` applies Lumenora branding and fixes permissions.

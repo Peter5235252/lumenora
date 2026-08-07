@@ -8,6 +8,7 @@ modules:
   - type: script
     scripts:
       - swap-ogc-kernel.sh
+      - force-systemd-boot.sh
 
   - type: rpm-ostree
     repos:

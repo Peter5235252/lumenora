@@ -39,25 +39,42 @@ kernel of choice):
   kernel version via the akmods module (`base: ogc`), so modules and kernel
   always match.
 
+The kernel is version-locked and never drifts; its replacement (and the
+bootloader swap) happen at build time in `files/scripts/swap-ogc-kernel.sh`
+and `files/scripts/force-systemd-boot.sh`.
+
 ## Bootloader
 
-The graphical ISO installs with **GRUB** (Anaconda's default), which keeps
-Fedora's Secure Boot support via the shim. Lumenora is also fully compatible
-with **systemd-boot** through bootc, using the Boot Loader Interface on the
-Fedora 44 composefs backend:
+Lumenora is **GRUB-free**: since v0.6.5-alpha the image ships **systemd-boot**
+as its only bootloader, replacing GRUB entirely.
 
-```bash
-sudo bootc install to-disk --bootloader systemd /dev/sda
-```
+- The image erases all GRUB/shim/bootupd packages at build time and ships a
+  default install config at `/usr/lib/bootc/install/00-lumenora.toml` that
+  forces `bootloader = "systemd"` (with discoverable-partitions/DPS root
+  discovery and an ext4 root). Every `bootc install to-disk` uses
+  systemd-boot automatically — no flags needed:
 
-Notes on the systemd-boot path:
+  ```bash
+  sudo bootc install to-disk /dev/sda
+  ```
 
-- It is only reachable via `bootc install`; the Anaconda-based ISO currently
-  always deploys GRUB.
-- bootc's systemd-boot deployment is not signed by Fedora's shim chain, so
-  Secure Boot must be disabled (or custom keys enrolled) when using it.
-- Boot entries, kernels, and upgrades are managed automatically through the
-  Boot Loader Interface (no manual menu updates).
+- systemd-boot manages boot entries, kernels, and upgrades automatically
+  through the Boot Loader Interface (no manual menu updates, no
+  `grub-mkconfig`).
+- systemd-boot is only supported by bootc on the **composefs backend**
+  (the Fedora 44 Atomic default), which Lumenora uses.
+- The EFI loader comes from the `systemd-boot-unsigned` package.
+
+Secure Boot caveats:
+
+- The unsigned systemd-boot binary is **not signed by Fedora's shim chain**,
+  so **Secure Boot must be disabled** (or custom keys enrolled).
+- The shim is removed with GRUB; there is no Fedora-signed boot path in
+  these images. This tradeoff is accepted to get the modern Boot Loader
+  Interface bootloader.
+- The Anaconda-based graphical installer ISO flow (which expects GRUB) is
+  paused until it can install systemd-boot. For now, install with
+  `bootc install to-disk` (or `to-filesystem`) directly.
 
 ## Gaming and desktop software
 
@@ -118,10 +135,16 @@ defined in `recipes/recipe-nvidia.yml` (proprietary flavor) and
 
 ## Graphical installer ISO
 
-Lumenora uses a separate Anaconda installer environment and the unified
-Image Builder `bootc-generic-iso` image type. The installer embeds the
-selected Lumenora image as its payload and asks for installation settings
-interactively. The desktop payload remains credential-free.
+> **Paused.** Since v0.6.5-alpha the images no longer contain GRUB/shim,
+> which the Anaconda-based ISO flow expects. Reworking the installer to
+> deploy systemd-boot is future work; install with `bootc install to-disk`
+> directly in the meantime.
+
+Lumenora's planned installer path is a separate Anaconda installer
+environment and the unified Image Builder `bootc-generic-iso` image type.
+The installer embeds the selected Lumenora image as its payload and asks
+for installation settings interactively. The desktop payload remains
+credential-free.
 
 To build an ISO locally:
 
@@ -145,17 +168,12 @@ The resulting ISO is written to `output/`. The installer workflow can also
 be started manually from GitHub Actions with a chosen payload image. It uploads
 the ISO as a workflow artifact.
 
-This installer path is intended for testing initially. The Image Builder
-documentation notes that bootc installations through Anaconda currently have
-a known `systemd-remount-fs.service` issue, so test the ISO in a VM before
-using it on a real machine.
-
 ## GitHub Actions
 
 The normal workflow builds and publishes the Lumenora images (base and both
-NVIDIA variants) on pushes to `main` and weekly. The installer workflow runs manually
-or when a version tag such as `v0.6.0-alpha` is pushed. It publishes the ISO
-as a GitHub Actions artifact.
+NVIDIA variants) on pushes to `main` and weekly. The installer workflow runs
+manually (paused — see above) and publishes the ISO as a GitHub Actions
+artifact.
 
 The repository needs one GitHub Actions secret for image publishing:
 
@@ -178,9 +196,10 @@ production deployments.
 
 ## Releases
 
+- `v0.6.5-alpha` — GRUB replaced by systemd-boot as the only bootloader
+  (Secure Boot off until custom key enrollment); kernel unchanged.
 - `v0.6.1-alpha` — OGC gaming kernel (pinned `7.1.6-ogc4.1-fc44`) with
-  matching NVIDIA kmods, systemd-boot path documented. Fresh installer ISO
-  with the OGC-kernel payload attached.
+  matching NVIDIA kmods, systemd-boot path documented.
 - `v0.6.0-alpha` — first KDE Plasma edition with automatic NVIDIA driver
   handling. ISO attached to the release and available as a workflow artifact.
 - `v0.5.0` — archived Hyprland/Wayblue/ML4W edition. Moved to the
@@ -188,8 +207,9 @@ production deployments.
 
 ## Installing or rebasing
 
-Use the graphical ISO for a fresh installation. For an existing Fedora Atomic
-system, rebase with:
+Fresh installations use `bootc install to-disk` (systemd-boot is the
+default, no flags needed; Secure Boot must be off). For an existing Fedora
+Atomic system, rebase with:
 
 ```bash
 sudo bootc switch ghcr.io/peter5235252/lumenora:latest
@@ -211,6 +231,8 @@ GPU is detected (see GPU driver handling above).
 - `.github/workflows/installer.yml` builds and uploads the graphical ISO.
 - `files/scripts/swap-ogc-kernel.sh` swaps the stock kernel for the OGC
   gaming kernel (pinned, version-locked) during the image build.
+- `files/scripts/force-systemd-boot.sh` removes GRUB/shim/bootupd, ships
+  `systemd-boot-unsigned`, and sets the systemd-boot install default.
 - `files/usr/lib/systemd/system/lumenora-gpu-detect.service` performs
   first-boot GPU detection and the NVIDIA rebase.
 - `files/usr/bin/lumenora-gpu-detect.sh` implements the detection logic.

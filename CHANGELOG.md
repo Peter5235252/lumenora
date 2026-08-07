@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.6.5-alpha - 2026-08-07
+
+Point release of the alpha line: GRUB replaced by systemd-boot.
+
+- **systemd-boot is now the only bootloader** — GRUB2, shim, and bootupd
+  are erased from the image at build time
+  (`files/scripts/force-systemd-boot.sh`), and the default install config
+  (`/usr/lib/bootc/install/00-lumenora.toml`) forces
+  `bootloader = "systemd"` with DPS root discovery and an ext4 root.
+- The unsigned `systemd-boot-unsigned` EFI loader (matching systemd 259.8)
+  is shipped in the image.
+- Secure Boot is therefore off by default (no Fedora shim chain); custom
+  key enrollment is future work.
+- The Anaconda-based graphical installer ISO flow is paused (it expects
+  GRUB); installs go through `bootc install to-disk`.
+- Kernel unchanged (OGC 7.1.6-ogc4.1-fc44, version-locked).
+
 ## v0.6.1-alpha - 2026-08-07
 
 Point release of the alpha line: gaming kernel and bootloader work.

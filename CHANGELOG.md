@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.7.0-alpha - unreleased
+## v0.6.1-alpha - 2026-08-07
+
+Point release of the alpha line: gaming kernel and bootloader work.
 
 Gaming kernel and bootloader work:
 

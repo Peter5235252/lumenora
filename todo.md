@@ -1,8 +1,8 @@
 # Lumenora Migration Plan
 
-Status: OGC kernel work (v0.7.0-alpha) on `main`.
+Status: OGC kernel work released as v0.6.1-alpha on `main`.
 
-## Phase 4 - Gaming kernel and bootloader (v0.7.0-alpha)
+## Phase 4 - Gaming kernel and bootloader (v0.6.1-alpha)
 - [x] Research OGC kernel + akmods compat (akmods `base: ogc` buildroot)
 - [x] `files/scripts/swap-ogc-kernel.sh`: pin `7.1.6-ogc4.1-fc44`, erase
       stock kernel, fetch OGC kernel over OCI (skopeo), extract RPM layers,
@@ -16,7 +16,8 @@ Status: OGC kernel work (v0.7.0-alpha) on `main`.
       (7.1.6-ogc4.1) in all, kmod-nvidia rpms keyed to the OGC kver
       (proprietary 580.173.02, open 610.43.03), all three cosign-verified
       against keys/cosign.pub (2026-08-07)
-- [ ] Tag a new release (ISO optional until v0.6.0-alpha artifact attached)
+- [ ] Tag v0.6.1-alpha -> fresh installer ISO with OGC-kernel payload,
+      attached to the release
 - [ ] Track kernel pin drift: bump `OGC_KERNEL_TAG` when OGC releases a
       new 7.1.x kernel build
 
@@ -53,5 +54,6 @@ Status: OGC kernel work (v0.7.0-alpha) on `main`.
       (release published 2026-08-07; ISO uploaded as workflow artifact
       `lumenora-installer-iso`, ~4.2 GB)
 - [ ] Download the installer ISO artifact and attach it to the v0.6.0-alpha
-      release (artifact expires 2026-11-05)
+      release (artifact expires 2026-11-05) — superseded by the fresh
+      v0.6.1-alpha ISO
 - [ ] VM test in GNOME Boxes (base + nvidia-open)

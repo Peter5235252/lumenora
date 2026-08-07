@@ -15,7 +15,7 @@ jobs:
   build-installer:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: read
 
     steps:
@@ -61,3 +61,18 @@ jobs:
           name: lumenora-installer-iso
           path: output/**/*.iso
           if-no-files-found: error
+
+      - name: Attach installer ISO to release (tag builds)
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          iso="$(find output -name '*.iso' | head -n 1)"
+          if [[ -z "$iso" ]]; then
+            echo "no ISO found in output/" >&2
+            exit 1
+          fi
+          if ! gh release view "${{ github.ref_name }}" >/dev/null 2>&1; then
+            gh release create "${{ github.ref_name }}" --title "${{ github.ref_name }}" --notes "Built by the installer workflow."
+          fi
+          gh release upload "${{ github.ref_name }}" "$iso" --clobber

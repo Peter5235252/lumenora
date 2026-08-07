@@ -178,6 +178,9 @@ production deployments.
 
 ## Releases
 
+- `v0.6.1-alpha` — OGC gaming kernel (pinned `7.1.6-ogc4.1-fc44`) with
+  matching NVIDIA kmods, systemd-boot path documented. Fresh installer ISO
+  with the OGC-kernel payload attached.
 - `v0.6.0-alpha` — first KDE Plasma edition with automatic NVIDIA driver
   handling. ISO attached to the release and available as a workflow artifact.
 - `v0.5.0` — archived Hyprland/Wayblue/ML4W edition. Moved to the

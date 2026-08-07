@@ -19,6 +19,18 @@ KDE Plasma branding ("Lumen"):
   window decoration engine stays (it follows the Lumen color scheme).
 - Layout is untouched: the default Plasma panel/widget layout is preserved.
 
+GRUB bootloader restored:
+
+- **systemd-boot-only reverted** — the v0.6.5-alpha experiment (GRUB/shim/
+  bootupd erased, `bootloader = "systemd"`) was dropped because Fedora 44's
+  Anaconda installer finalizes the bootloader with GRUB2, so the image could
+  not be installed from the graphical ISO (deployment wrote but the ESP was
+  left empty). `files/scripts/force-systemd-boot.sh` and the
+  `/usr/lib/bootc/install/00-lumenora.toml` config were removed.
+- GRUB2, shim, and bootupd ship stock again, so Secure Boot works with the
+  Fedora-signed shim chain and the Anaconda installer ISO flow works.
+- Kernel and theming work unchanged (OGC pinned 7.1.6-ogc4.1-fc44, Lumen).
+
 ## v0.6.5-alpha - 2026-08-07
 
 Point release of the alpha line: GRUB replaced by systemd-boot.

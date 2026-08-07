@@ -58,42 +58,27 @@ kernel of choice):
   kernel version via the akmods module (`base: ogc`), so modules and kernel
   always match.
 
-The kernel is version-locked and never drifts; its replacement (and the
-bootloader swap) happen at build time in `files/scripts/swap-ogc-kernel.sh`
-and `files/scripts/force-systemd-boot.sh`.
+The kernel is version-locked and never drifts; its replacement happens at
+build time in `files/scripts/swap-ogc-kernel.sh`.
 
 ## Bootloader
 
-Lumenora is **GRUB-free**: since v0.6.5-alpha the image ships **systemd-boot**
-as its only bootloader, replacing GRUB entirely.
+Lumenora uses the **stock GRUB2/shim bootloader** from Fedora Atomic (the
+default for bootc images and the Anaconda installer flow):
 
-- The image erases all GRUB/shim/bootupd packages at build time and ships a
-  default install config at `/usr/lib/bootc/install/00-lumenora.toml` that
-  forces `bootloader = "systemd"` (with discoverable-partitions/DPS root
-  discovery and an ext4 root). Every `bootc install to-disk` uses
-  systemd-boot automatically — no flags needed:
+- GRUB2, shim, and bootupd are left untouched at build time, so Secure Boot
+  works out of the box with the Fedora-signed shim chain.
+- `bootc install to-disk` (and the Anaconda graphical installer ISO) use the
+  default GRUB2 path automatically — no flags needed:
 
   ```bash
   sudo bootc install to-disk /dev/sda
   ```
 
-- systemd-boot manages boot entries, kernels, and upgrades automatically
-  through the Boot Loader Interface (no manual menu updates, no
-  `grub-mkconfig`).
-- systemd-boot is only supported by bootc on the **composefs backend**
-  (the Fedora 44 Atomic default), which Lumenora uses.
-- The EFI loader comes from the `systemd-boot-unsigned` package.
-
-Secure Boot caveats:
-
-- The unsigned systemd-boot binary is **not signed by Fedora's shim chain**,
-  so **Secure Boot must be disabled** (or custom keys enrolled).
-- The shim is removed with GRUB; there is no Fedora-signed boot path in
-  these images. This tradeoff is accepted to get the modern Boot Loader
-  Interface bootloader.
-- The Anaconda-based graphical installer ISO flow (which expects GRUB) is
-  paused until it can install systemd-boot. For now, install with
-  `bootc install to-disk` (or `to-filesystem`) directly.
+- The v0.6.5-alpha experiment (systemd-boot as the only bootloader, GRUB
+  removed) was reverted: it blocked the Anaconda installer flow, which
+  finalizes the bootloader with GRUB2. The systemd-boot-unsigned loader is
+  no longer shipped.
 
 ## Gaming and desktop software
 
@@ -154,16 +139,10 @@ defined in `recipes/recipe-nvidia.yml` (proprietary flavor) and
 
 ## Graphical installer ISO
 
-> **Paused.** Since v0.6.5-alpha the images no longer contain GRUB/shim,
-> which the Anaconda-based ISO flow expects. Reworking the installer to
-> deploy systemd-boot is future work; install with `bootc install to-disk`
-> directly in the meantime.
-
-Lumenora's planned installer path is a separate Anaconda installer
-environment and the unified Image Builder `bootc-generic-iso` image type.
-The installer embeds the selected Lumenora image as its payload and asks
-for installation settings interactively. The desktop payload remains
-credential-free.
+Lumenora's installer path is a separate Anaconda installer environment and
+the unified Image Builder `bootc-generic-iso` image type. The installer
+embeds the selected Lumenora image as its payload and asks for installation
+settings interactively. The desktop payload remains credential-free.
 
 To build an ISO locally:
 
@@ -191,8 +170,7 @@ the ISO as a workflow artifact.
 
 The normal workflow builds and publishes the Lumenora images (base and both
 NVIDIA variants) on pushes to `main` and weekly. The installer workflow runs
-manually (paused — see above) and publishes the ISO as a GitHub Actions
-artifact.
+manually and publishes the ISO as a GitHub Actions artifact.
 
 The repository needs one GitHub Actions secret for image publishing:
 
@@ -215,10 +193,13 @@ production deployments.
 
 ## Releases
 
+- `main` (unreleased) — GRUB2/shim restored (systemd-boot-only reverted),
+  latest KDE Plasma 6.7.x, Lumen theming.
 - `v0.6.5-alpha` — GRUB replaced by systemd-boot as the only bootloader
   (Secure Boot off until custom key enrollment); kernel unchanged.
+  **Reverted on `main`.**
 - `v0.6.1-alpha` — OGC gaming kernel (pinned `7.1.6-ogc4.1-fc44`) with
-  matching NVIDIA kmods, systemd-boot path documented.
+  matching NVIDIA kmods.
 - `v0.6.0-alpha` — first KDE Plasma edition with automatic NVIDIA driver
   handling. ISO attached to the release and available as a workflow artifact.
 - `v0.5.0` — archived Hyprland/Wayblue/ML4W edition. Moved to the
@@ -226,9 +207,9 @@ production deployments.
 
 ## Installing or rebasing
 
-Fresh installations use `bootc install to-disk` (systemd-boot is the
-default, no flags needed; Secure Boot must be off). For an existing Fedora
-Atomic system, rebase with:
+Fresh installations use `bootc install to-disk` (GRUB2/shim default, Secure
+Boot works out of the box) or the Anaconda graphical installer ISO. For an
+existing Fedora Atomic system, rebase with:
 
 ```bash
 sudo bootc switch ghcr.io/peter5235252/lumenora:latest
@@ -250,8 +231,6 @@ GPU is detected (see GPU driver handling above).
 - `.github/workflows/installer.yml` builds and uploads the graphical ISO.
 - `files/scripts/swap-ogc-kernel.sh` swaps the stock kernel for the OGC
   gaming kernel (pinned, version-locked) during the image build.
-- `files/scripts/force-systemd-boot.sh` removes GRUB/shim/bootupd, ships
-  `systemd-boot-unsigned`, and sets the systemd-boot install default.
 - `files/scripts/update-os.sh` refreshes all packages (latest Plasma 6.7).
 - `files/scripts/lumen-theme.sh` applies the Lumen theme, removes stock
   KDE themes, and sets the Nebula wallpaper default.

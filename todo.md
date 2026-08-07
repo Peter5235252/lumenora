@@ -1,6 +1,21 @@
 # Lumenora Migration Plan
 
-Status: Plasma branding ("Lumen") work on `main` (unreleased).
+Status: GRUB bootloader restored + Lumen Plasma theming on `main` (unreleased).
+
+## Phase 7 - GRUB restore + ISO/VM test (unreleased)
+- [x] Diagnose failed mid-install (Boxes): full deployment written, ESP left
+      empty — Fedora 44 Anaconda finalizes the bootloader with GRUB2, which
+      the systemd-boot-only image removed
+- [x] Revert to GRUB: remove `force-systemd-boot.sh` from all recipes, delete
+      script + `00-lumenora.toml`; grub2/shim/bootupd ship stock again
+      (Secure Boot + Anaconda ISO path work again)
+- [ ] Local rebuild base + validate grub restored (no systemd-boot-unsigned,
+      no 00-lumenora.toml), OGC kernel + Lumen intact
+- [ ] Push to main + green Actions build
+- [ ] Build fresh installer ISO from the reverted image
+- [ ] Install ISO in GNOME Boxes (user session; pkexec Boxes segfaults)
+- [ ] VM sanity check: Lumen theme, nebula wallpaper, Plasma 6.7.4,
+      OGC 7.1.6-ogc4.1 kernel, GRUB boot, Secure Boot shim intact
 
 ## Phase 6 - KDE Plasma branding "Lumen" (unreleased)
 - [x] Latest KDE Plasma 6.7.x via `files/scripts/update-os.sh` (update step)
@@ -13,12 +28,16 @@ Status: Plasma branding ("Lumen") work on `main` (unreleased).
 - [x] Stock Breeze (light/dark/twilight) + Breeze Classic + Fedora global
       themes removed so only Lumen is selectable; layout untouched
 - [x] New-user defaults via skel `kdeglobals`/`plasmarc` + kde-profile
-- [ ] Local build validation: Plasma >= 6.7.4, Lumen present, stock themes
+- [x] Local build validation: Plasma >= 6.7.4, Lumen present, stock themes
       gone, wallpaper default set, OGC kernel + systemd-boot intact
-- [ ] Push to main + green Actions build
-- [ ] VM sanity check (wallpaper + theme render)
+- [x] Local build validation: Plasma >= 6.7.4, Lumen present, stock themes
+      gone, wallpaper default set, OGC kernel intact
+- [x] Push to main + green Actions build (all 3 images, 2026-08-07)
+- [x] Fresh installer ISO for the systemd-boot image built and downloaded —
+      install failed mid-install; diagnosed as the Anaconda/GRUB2 finalize
+      blocker (ESP empty) → reverted to GRUB (Phase 7)
 
-## Phase 5 - systemd-boot only (v0.6.5-alpha)
+## Phase 5 - systemd-boot only (v0.6.5-alpha) — REVERTED on main
 - [x] `files/scripts/force-systemd-boot.sh`: install `systemd-boot-unsigned`,
       write `/usr/lib/bootc/install/00-lumenora.toml`
       (`bootloader = "systemd"`, DPS, ext4 root), erase grub2-*/shim-*/bootupd
@@ -27,8 +46,9 @@ Status: Plasma branding ("Lumen") work on `main` (unreleased).
       systemd-bootx64.efi present, kernel still OGC, builds green
 - [x] Push to main, green Actions build, cosign verify all three images
 - [x] Tag v0.6.5-alpha + release notes (no ISO: Anaconda flow paused)
-- [ ] Revisit installer ISO for systemd-boot (or install via
-      `bootc install to-disk`); Secure Boot needs custom key enrollment
+- [x] ~~Revisit installer ISO for systemd-boot~~ — superseded: the
+      Anaconda/GRUB2 incompatibility (ESP left empty mid-install) led to the
+      **permanent revert to GRUB** (Phase 7)
 
 ## Phase 4 - Gaming kernel and bootloader (v0.6.1-alpha)
 - [x] Research OGC kernel + akmods compat (akmods `base: ogc` buildroot)

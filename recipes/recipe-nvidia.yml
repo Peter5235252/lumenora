@@ -12,7 +12,6 @@ modules:
   - type: script
     scripts:
       - swap-ogc-kernel.sh
-      - force-systemd-boot.sh
       - lumen-theme.sh
 
   - type: akmods

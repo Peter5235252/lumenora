@@ -3,14 +3,14 @@
 Status: systemd-boot-only bootloader (v0.6.5-alpha) on `main`.
 
 ## Phase 5 - systemd-boot only (v0.6.5-alpha)
-- [ ] `files/scripts/force-systemd-boot.sh`: install `systemd-boot-unsigned`,
+- [x] `files/scripts/force-systemd-boot.sh`: install `systemd-boot-unsigned`,
       write `/usr/lib/bootc/install/00-lumenora.toml`
       (`bootloader = "systemd"`, DPS, ext4 root), erase grub2-*/shim-*/bootupd
-- [ ] Wire script into all three recipes (after swap-ogc-kernel.sh)
-- [ ] Validate locally: config present, no grub/shim/bootupd left,
+- [x] Wire script into all three recipes (after swap-ogc-kernel.sh)
+- [x] Validate locally: config present, no grub/shim/bootupd left,
       systemd-bootx64.efi present, kernel still OGC, builds green
-- [ ] Push to main, green Actions build, cosign verify all three images
-- [ ] Tag v0.6.5-alpha + release notes (no ISO: Anaconda flow paused)
+- [x] Push to main, green Actions build, cosign verify all three images
+- [x] Tag v0.6.5-alpha + release notes (no ISO: Anaconda flow paused)
 - [ ] Revisit installer ISO for systemd-boot (or install via
       `bootc install to-disk`); Secure Boot needs custom key enrollment
 

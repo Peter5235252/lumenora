@@ -5,6 +5,9 @@
 - **Discover removed**: plasma-discover package family dropped from all
   three recipes (software center unavailable on purpose; flatpaks are
   managed via Bazaar Store / CLI).
+- **Extra apps removed**: kwrite (KWrite), kdeconnectd (KDE Connect),
+  kfind (KFind), kcharselect (KCharSelect), khelpcenter (Help Center /
+  Fedora documentation) — gone from all three recipes.
 - **Dock pins**: the default Plasma panel template now pins Konsole and
   Bazaar Store in the Icons-Only Task Manager
   (`files/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js`).

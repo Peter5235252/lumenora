@@ -45,6 +45,11 @@ modules:
       - plasma-discover-kns
       - plasma-discover-notifier
       - plasma-discover-rpm-ostree
+      - kwrite
+      - kdeconnectd
+      - kfind
+      - kcharselect
+      - khelpcenter
 
   - type: default-flatpaks
     configurations:

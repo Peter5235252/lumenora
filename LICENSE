@@ -1,4 +1,36 @@
-MIT License
+Lumenora Licensing Notice
+=========================
+
+This repository is NOT licensed as a single, unified work. It contains two
+clearly distinct sets of software with different license terms:
+
+  A) Lumenora's own, original files   ->  MIT License (see below)
+  B) Bundled / upstream third-party    ->  NOT licensed by this repository;
+                                           each component keeps its own license
+
+Keep this separation in mind. Nothing in this file grants you a license to
+any third-party software that Lumenora's builds incorporate; for those you
+must consult the license of each component as described in section (B).
+
+--------------------------------------------------------------------------------
+(A) Lumenora's OWN work — MIT License
+--------------------------------------------------------------------------------
+
+This section applies ONLY to the files in this repository that were written
+by this project itself, namely:
+
+  - the BlueBuild recipe definitions: `recipes/recipe.yml`,
+    `recipes/recipe-nvidia.yml`, `recipes/recipe-nvidia-open.yml`;
+  - the build scripts and configuration this project authors, under `files/`
+    and `scripts/` (including the Lumen Plasma theme, MangoHud/GameMode/gamescope
+    configuration, skel dotfiles, and the GPU-detection tooling under
+    `files/usr/`);
+  - the `Containerfile`, `installer/` definitions, and the GitHub Actions
+    workflows under `.github/`.
+
+It does NOT cover any file copied or derived from upstream, and it does NOT
+cover the Lumenora operating-system image or installer ISO that these build
+definitions produce.
 
 Copyright (c) 2026 Cseman Péter
 
@@ -20,100 +52,81 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
----
-
-Scope of this MIT license (apply to Lumenora's own work only)
-
-The MIT text above covers ONLY the original works written by the author for
-this repository, i.e. the files this project authors, edits, or assembles as
-its own build logic and user configuration. It does NOT grant any license to,
-and does NOT relicense, any third-party or upstream software incorporated into
-Lumenora's image or installer.
-
-The files covered here are:
-
-  - the BlueBuild recipe definitions: `recipes/recipe.yml`,
-    `recipes/recipe-nvidia.yml`, `recipes/recipe-nvidia-open.yml`;
-  - the build scripts and configuration under `files/` and `scripts/`,
-    including the Lumen Plasma theme (derived artwork and KDE config),
-    MangoHud/GameMode/gamescope configuration, skel dotfiles, and the
-    GPU-detection tooling under `files/usr/`;
-  - the `Containerfile`, `installer/` definitions, and the GitHub Actions
-    workflows under `.github/`.
-  Each such file, to the extent it is authored by this project rather than
-  copied from upstream, is MIT-licensed.
-
-LICENSE applies to the repository's own work only. Regarding the operating
-system image this project builds:
+--------------------------------------------------------------------------------
+(B) Third-party / bundled software — NOT covered by the MIT grant
+--------------------------------------------------------------------------------
 
 Lumenora is an OCI/bootc ("image-mode") build layered on the Fedora Atomic
 Desktop (Kinoite) base image at `quay.io/fedora-ostree-desktops/kinoite`
-(Fedora release 44). A shipped image is an aggregation of many independent,
-individually licensed programs — dozens of upstream rpms, flatpak
-applications, firmware, and libraries — plus Lumenora's own small set of
-additions. This LICENSE does NOT and cannot relicense those components.
-Each keeps its own governing license. The notable examples are listed below
-for clarity; the authoritative source for any given package is the license
-declared in that package (RPM `License:` metadata, contained `LICENSE`,
-`COPYING`, or `LICENSES/` files, and the project's own legal pages). This list
-is illustrative, not exhaustive, and is subject to change as packages update.
+(Fedora release 44). The images and ISO it produces are an aggregation of
+many independent, individually licensed programs: dozens of upstream RPMs,
+Flatpak applications, firmware, and libraries, plus Lumen's own small set of
+additions.
 
-- Fedora ISO / core operating system packages: there is NO single "Fedora
-  license". Every package is individually licensed. GNU core utilities and
-  the glibc library are GPL-3.0-or-later and LGPL-2.1-or-later respectively;
-  systemd is LGPL-2.1-or-later; each package's own license governs.
+This repository cannot and does not relicense any of those components, and
+the MIT grant in section (A) does not extend to them. Each component keeps
+its own governing license. The authoritative source for any given package is
+the license that package declares (an RPM `License:` field, an included
+`LICENSE`, `COPYING` or `LICENSES/` file, or the project's own legal pages).
+The following list is for clarity; it is illustrative, not exhaustive, and
+changes as packages are updated.
 
-- The Linux kernel: GPL-2.0-only (SPDX `GPL-2.0-only`), with the 
-  `linux-syscall-note` exception applying to UAPI and syscall-invoking
-  userspace. It is explicitly NOT licensed under "GPL v2 or later".
+- Fedora / core operating-system packages: there is NO single "Fedora
+  license". Every package is individually licensed (GNU coreutils
+  GPL-3.0-or-later; glibc LGPL-2.1-or-later; systemd LGPL-2.1-or-later;
+  and so on).
 
-- The Open Gaming Collective (OGC) gaming kernel (which this project swaps in
-  via `files/scripts/swap-ogc-kernel.sh`): a fork of the Linux stable tree
-  (`gregkh/linux`), i.e. GPL-2.0-only with the same syscall exception.
+- Linux kernel: GPL-2.0-only (SPDX `GPL-2.0-only`) with the
+  `linux-syscall-note` exception for UAPI / syscall-invoking userspace. It is
+  NOT licensed under "GPL v2 or later".
+
+- Open Gaming Collective (OGC) gaming kernel (swapped in by
+  `files/scripts/swap-ogc-kernel.sh`): a fork of the Linux stable tree
+  (`gregkh/linux`), therefore GPL-2.0-only with the same syscall exception.
 
 - KDE Plasma, KDE Frameworks and KDE Gear: primarily LGPL-2.1-or-later, with
-  many files also under LGPL-2.1-only, GPL-2.0-only, GPL-2.0-or-later,
-  GPL-3.0-only, BSD/MIT, GFDL-1.2 (documentation), and CC-BY-SA-4.0 (media,
-  icons). Individual files carry their own SPDX identifiers.
+  files also under LGPL-2.1-only, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only,
+  BSD/MIT, GFDL-1.2 (documentation) and CC-BY-SA-4.0 (media, icons). Individual
+  files carry their own SPDX identifiers.
 
-- Qt 6 (on which Plasma depends): LGPL-3.0 or GPL-3.0 for open-source use (not
-  LGPL-2.1). The KDE repository enforces its own licensing policy and the
-  LicenseRef-KDE-Accepted-LGPL/GPL licensing.
+- Qt 6 (which Plasma depends on): LGPL-3.0 or GPL-3.0 for open-source use (not
+  LGPL-2.1), under the KDE licensing policy and the
+  LicenseRef-KDE-Accepted-LGPL/GPL licenses.
 
 - NVIDIA driver stack (in the `-nvidia` image variant only): the NVIDIA
   proprietary graphics driver and CUDA runtime are distributed under the
-  NVIDIA/nvidia software LICENSE (end-use license agreement, non-free);
-  `nvidia-container-toolkit` is Apache-2.0. The `nvidia-open` kernel source
-  flavor (Turing/newer) carries the MIT / NVIDIA license for that hardware.
-  These are added by the build's akmods module, belong to their respective
-  owners, and are not covered by this file's MIT grant.
+  NVIDIA end-user license agreement (non-free); `nvidia-container-toolkit` is
+  Apache-2.0. The `nvidia-open` kernel source flavor (Turing and newer) is
+  MIT/NVIDIA licensed. These are added by the build's akmods module, belong to
+  their respective owners, and fall outside section (A).
 
-- Other bundled tools (gamescope, MangoHud, GameMode, Steam, the `bazaar-store`
-  repo packages, oh-my-posh, eza, fastfetch, distrobox, flatpaks) each carry
-  their own upstream licenses (MIT, BSD, GPL, LGPL, Apache, Mozilla, CC, etc.).
-  Flatpak app runtimes and their dependencies (e.g. the MangoHud Vulkan layer,
-  and the freedesktop/GNOME/Qt platform runtimes) carry their own licenses.
+- Other bundled tools (gamescope, MangoHud, GameMode, Steam, the
+  `bazaar-store` package set, oh-my-posh, eza, fastfetch, distrobox, flatpaks)
+  each carry their own upstream licenses (MIT, BSD, GPL, LGPL, Apache, Mozilla,
+  CC, etc.). Flatpak runtime dependencies (e.g. the MangoHud Vulkan layer and
+  the freedesktop/GNOME/Qt platform runtimes) carry their own licenses.
 
+--------------------------------------------------------------------------------
 Distribution obligations
+--------------------------------------------------------------------------------
 
 Redistributing or publishing any Lumenora image, ISO, or derivative triggers
-the obligations of each included component, in particular:
+the obligations of each bundled component. In particular:
 
-- Any GPL-2.0-only / GPL-2.0-or-later / GPL-3.0 code (e.g., the Linux and OGC
-  kernels, and any GPL components) must be redistributed in compliance with
-  the GPL, including providing complete corresponding source and the license
-  text, when redistributed in binary form.
-- LGPL components (e.g., glibc, systemd, KDE/Qt libraries) permit dynamic
-  linking by this image under LGPL; honor re-linking and documentation
-  obligations where applicable.
-- Apache-2.0, BSD, MIT, and permissive components require preserving their
-  notice files.
-- Proprietary components (NVIDIA) remain bound by their own license/EULA and
-  must not be redistributed beyond NVIDIA's published terms.
+- GPL-2.0-only / GPL-2.0-or-later / GPL-3.0 code (e.g. the Linux and OGC
+  kernels) must be redistributed in compliance with the GPL, including
+  complete corresponding source and license text when redistributed in binary
+  form.
+- LGPL components (e.g. glibc, systemd, KDE/Qt libraries) permit dynamic
+  linking under LGPL; honor re-linking and documentation obligations.
+- Apache-2.0, BSD, MIT and other permissive components require preserving
+  their notice files.
+- Proprietary components (NVIDIA) stay bound by their own license/EULA and must
+  not be redistributed beyond NVIDIA's published terms.
 
 This project follows Fedora's legal guidelines for repackaging and
-redistribution. Nothing in the MIT grant above is a claim of ownership or
-licensor over any upstream component, and the MIT license text is confined
-solely to the files this project itself authors. Distributions, derivative
+redistribution. The MIT grant above is a claim only over the files Lumen
+itself authors in section (A); it is not a claim of ownership over, and
+does not relicense, any bundled upstream component. Distributions, derivative
 images, or repackages of Lumenora must themselves comply with the licenses of
-all bundled components (including GPL source redistribution).
+all bundled components, including GPL source redistribution.

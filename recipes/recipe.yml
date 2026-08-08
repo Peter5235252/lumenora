@@ -12,6 +12,7 @@ modules:
   - type: script
     scripts:
       - swap-ogc-kernel.sh
+      - dedup-home-subvol.sh
       - lumen-theme.sh
 
   - type: rpm-ostree

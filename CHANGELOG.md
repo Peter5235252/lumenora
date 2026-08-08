@@ -21,10 +21,14 @@ Known issue tracked from the GNOME Boxes VM run:
   KDE/Kinoite replaced SDDM with PLM as the default display manager (see
   Fedora Change accepted for F44, Plasma 6.6+). Visuals (Lumen wallpaper,
   theme) load fine.
-- The guest repeatedly returns to the PLM login manager instead of starting
-  a Plasma session — under investigation; a cold libvirt restart (destroy +
-  start) moves past the switch-root phase, so this is not the OGC root-mount
-  panic anymore.
+- The guest repeatedly returned to the PLM login manager instead of starting
+  a Plasma session — **root-caused and fixed**. Anaconda carved a separate
+  btrfs `home` subvolume and fstab-mounted it at `/home`, but it was empty:
+  it shadowed the ostree `/home -> var/home` symlink, so
+  `plasmalogin-helper`'s `chdir(/home/<user>)` failed and the session died.
+- Fix: the image now ships `lumenora-dedup-home.service`, a first-boot unit
+  that removes a shadowing empty `/home` subvolume mount from `/etc/fstab`
+  (falls back to `/var/home`). Verified in the VM: login reaches Plasma.
 
 ## v0.7.0-alpha - 2026-08-08
 

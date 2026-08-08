@@ -193,11 +193,9 @@ production deployments.
 
 ## Releases
 
-- `v0.7.1-alpha` — **unstable backup build** of the current `main`
-  (v0.7.0-alpha + license scope rewrite). Backed up so the image produced by
-  the install-test campaign stays available: it boots into Plasma Login
-  Manager (PLM) on a fresh install, but a Plasma session may fail to start
-  and throw back to PLM — use `v0.7.0-alpha` or later for daily driving.
+- `v0.7.1-alpha` — unstable backup snapshot of `main` (v0.7.0-alpha +
+  license scope). Also carries the verified fstab fix for the PLM session
+  bounce (empty btrfs `home` subvolume was shadowing `/home -> var/home`).
 - `v0.7.0-alpha` — latest stable-tagged. GRUB2/shim restored
   (systemd-boot-only reverted), latest KDE Plasma 6.7.x, Lumen theming, and a
   fixed OGC kernel that ships its initramfs (fresh installs no longer

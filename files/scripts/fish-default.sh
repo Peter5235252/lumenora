@@ -8,6 +8,12 @@ set -euo pipefail
 #      re-parented to fish on first boot
 # Fastfetch output on interactive fish start is handled by the skel
 # dotfiles (files/etc/skel/.config/fish/conf.d/30-autostart.fish).
+#
+# The first-boot script also canonicalizes each human user's home directory
+# to the physical /var/home/<user> path (Fedora Atomic convention). If the
+# passwd entry keeps the symlinked /home/<user>, a session that starts at
+# /var/home/<user> renders /v/h/<user> in the prompt instead of "~" because
+# fish only abbreviates $HOME when PWD starts with it.
 
 # --- 1. Default for future useradd calls --------------------------------
 USERADD_DEF=/etc/default/useradd
@@ -36,6 +42,15 @@ for pw in $(getent passwd); do
     # interactive human users only, and only when not already fish
     if [ "$uid" -ge 1000 ] && [ "$uid" -lt 65534 ] && [ "$shell" != "/usr/bin/fish" ]; then
         chsh -s /usr/bin/fish "$user" || true
+    fi
+    # canonicalize the home dir to physical /var/home/<user> so the fish
+    # prompt (and everything else) shows "~" instead of /v/h/...
+    if [ "$uid" -ge 1000 ] && [ "$uid" -lt 65534 ]; then
+        realhome=$(realpath -m "/var/home/$user" 2>/dev/null || true)
+        passwdhome=$(awk -F: '{print $6}' <<<"$pw")
+        if [ -n "$realhome" ] && [ "$realhome" != "$passwdhome" ] && [ -d "$realhome" ]; then
+            usermod -d "$realhome" "$user" || true
+        fi
     fi
 done
 

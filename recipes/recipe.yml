@@ -33,6 +33,13 @@ modules:
       - oh-my-posh
       - eza
       - fish
+    remove:
+      - plasma-discover
+      - plasma-discover-libs
+      - plasma-discover-flatpak
+      - plasma-discover-kns
+      - plasma-discover-notifier
+      - plasma-discover-rpm-ostree
 
   - type: default-flatpaks
     configurations:
@@ -48,6 +55,7 @@ modules:
           - net.pcsx2.PCSX2
           - org.DolphinEmu.dolphin-emu
           - org.duckstation.DuckStation
+          - com.vysp3r.ProtonPlus
 
   - type: files
     files:

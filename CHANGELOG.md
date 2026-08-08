@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.7.3-alpha - 2026-08-08 (UNSTABLE, unreleased)
+
+- **Discover removed**: plasma-discover package family dropped from all
+  three recipes (software center unavailable on purpose; flatpaks are
+  managed via Bazaar Store / CLI).
+- **Dock pins**: the default Plasma panel template now pins Konsole and
+  Bazaar Store in the Icons-Only Task Manager
+  (`files/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js`).
+- **ProtonPlus**: `com.vysp3r.ProtonPlus` (Proton compatibility-tools
+  manager for Steam and other apps) added to the system flatpak batch.
+
 ## v0.7.2-alpha - 2026-08-08 (UNSTABLE, unreleased)
 
 Post-backup polish round (pending CI image + VM verification):
@@ -20,6 +31,11 @@ Post-backup polish round (pending CI image + VM verification):
   in `/usr/share/wallpapers`.
 - **PLM greeter branding**: `files/etc/plasmalogin.conf.d/lumen.conf` pins
   the greeter to the org.kde.image wallpaper plugin.
+- **fish fixes**: oh-my-posh invoked from PATH instead of `~/.local/bin`;
+  canonical `/var/home/<user>` home directories so the prompt shows `~`
+  instead of `/v/h/<user>`.
+- **MangoHud flatpak layer dropped** (multi-branch ref aborts the
+  system-flatpak-setup batch; MangoHud stays as an RPM).
 
 ## v0.7.1-alpha - 2026-08-08 (UNSTABLE backup build)
 

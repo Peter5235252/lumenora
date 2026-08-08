@@ -48,7 +48,7 @@ optimized kernel from the [Open Game Collective](https://github.com/opengamingco
 kernel of choice):
 
 - The stock kernel packages are erased and the OGC kernel (currently pinned
-  to `7.1.6-ogc4.1-fc44`) is installed from its OCI distribution, then
+  to `7.1.6-ogc5.1-fc44`) is installed from its OCI distribution, then
   version-locked with `dnf versionlock` so the image does not drift to a
   stock kernel on a later update.
 - To update the kernel, bump the `OGC_KERNEL_TAG` pin in

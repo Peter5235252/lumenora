@@ -42,6 +42,9 @@ OGC kernel initramfs fix:
   every deploy ships its initrd and fresh installs boot normally. Verified
   by installing the vanilla ISO in GNOME Boxes: the fix booted the deploy
   through systemd switch-root.
+- Kernel pin bumped to `7.1.6-ogc5.1-fc44` to match the akmods `base: ogc`
+  buildroot (kmods are keyed to that kver; the previous `ogc4.1` pin failed
+  the NVIDIA variant builds with "nothing provides kernel-uname-r").
 
 ## v0.6.5-alpha - 2026-08-07
 

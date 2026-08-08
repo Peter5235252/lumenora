@@ -75,8 +75,9 @@ OGC-kernel initramfs fix on `main`.
       against keys/cosign.pub (2026-08-07)
 - [ ] Tag v0.6.1-alpha -> fresh installer ISO with OGC-kernel payload,
       attached to the release
-- [ ] Track kernel pin drift: bump `OGC_KERNEL_TAG` when OGC releases a
-      new 7.1.x kernel build
+- [x] Track kernel pin drift: bump `OGC_KERNEL_TAG` when OGC releases a
+      new 7.1.x kernel build — bumped to `7.1.6-ogc5.1-fc44` (akmods
+      `base: ogc` kmods now keyed to that kver)
 
 ## Phase 3 - Hardware Detection (Fedora Atomic / bootc)
 - [x] Move v0.5.0 Hyprland cut to `legacy-hyprland` branch

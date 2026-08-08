@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.7.1-alpha - 2026-08-08 (UNSTABLE backup build)
+
+Version-bumped backup snapshot of the current `main` (v0.7.0-alpha + license
+scope rewrite). This is the golden image for the virtual-machine / fresh
+install test campaign, because it reached the Plasma Login Manager on first
+boot.
+
+**Status: UNSTABLE — may fail on reboot or first login.**
+
+- Image keeps: GRUB2/shim restore, Lumen Plasma theming (6.7.x), OGC kernel
+  `7.1.6-ogc5.1-fc44`, generated initramfs, kernel pin matching the akmods
+  buildroot.
+- Docs: LICENSE scope clarified (MIT covers only Lumenora's own files;
+  bundled software keeps its own GPL/LGPL/Apache/proprietary licenses).
+
+Known issue tracked from the GNOME Boxes VM run:
+
+- First installation boots into **Plasma Login Manager** (PLM) — Fedora 44
+  KDE/Kinoite replaced SDDM with PLM as the default display manager (see
+  Fedora Change accepted for F44, Plasma 6.6+). Visuals (Lumen wallpaper,
+  theme) load fine.
+- The guest repeatedly returns to the PLM login manager instead of starting
+  a Plasma session — under investigation; a cold libvirt restart (destroy +
+  start) moves past the switch-root phase, so this is not the OGC root-mount
+  panic anymore.
+
 ## v0.7.0-alpha - 2026-08-08
 
 KDE Plasma branding ("Lumen"):

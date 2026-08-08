@@ -1,4 +1,4 @@
-# Lumenora Migration Plan
+Status: v0.7.1-alpha (unstable backup) tagged — PLM boot verified in VM; Plasma session start under investigation.
 
 Status: v0.7.0-alpha released — GRUB restored + Lumen Plasma theming +
 OGC-kernel initramfs fix on `main`.

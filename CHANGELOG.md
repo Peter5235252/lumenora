@@ -1,22 +1,43 @@
 # Changelog
 
-## v0.7.3-alpha - 2026-08-08 (UNSTABLE, unreleased)
+## v0.7.3-alpha - 2026-08-08
+
+App/packaging debloat round on top of the v0.7.2 polish (builds clean on
+all three images and verified in the VM — removed apps are actually gone,
+ProtonPlus lands in the system flatpak batch).
 
 - **Discover removed**: plasma-discover package family dropped from all
   three recipes (software center unavailable on purpose; flatpaks are
   managed via Bazaar Store / CLI).
-- **Extra apps removed**: kwrite (KWrite), kdeconnectd (KDE Connect),
-  kfind (KFind), kcharselect (KCharSelect), khelpcenter (Help Center /
-  Fedora documentation) — gone from all three recipes.
+- **Extra apps removed**: kwrite (KWrite), kdeconnectd (KDE Connect;
+  pulled in with kde-connect / kde-connect-libs), kfind (KFind),
+  kcharselect (KCharSelect), khelpcenter (Help Center / Fedora
+  documentation) — gone from all three recipes.
 - **Dock pins**: the default Plasma panel template now pins Konsole and
   Bazaar Store in the Icons-Only Task Manager
   (`files/usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js`).
 - **ProtonPlus**: `com.vysp3r.ProtonPlus` (Proton compatibility-tools
   manager for Steam and other apps) added to the system flatpak batch.
-
-## v0.7.2-alpha - 2026-08-08 (UNSTABLE, unreleased)
-
-Post-backup polish round (pending CI image + VM verification):
+- **Gaming flatpaks**: add RetroArch, PCSX2, Dolphin, DuckStation to all
+  three recipes.
+- **fish as default shell**: `fish-default.sh` sets useradd's default and a
+  first-boot `lumenora-fish-default.service` that flips existing accounts
+  (UID 1000-65533) to fish; fastfetch already runs on interactive startup
+  via the skel dotfiles; oh-my-posh invoked from PATH instead of
+  `~/.local/bin`; canonical `/var/home/<user>` home so the prompt shows `~`
+  instead of `/v/h/<user>`.
+- **Anaconda installer branding**: `installer/anaconda-gtk.css` (Lumen
+  colors) plus pixmaps (sidebar background/logo, top bar) shipped into the
+  installer container.
+- **Light text fix**: BreezeLight/BreezeDark scheme names are rebuilt from
+  the Lumen palette (PLM's greeter hard-requests "BreezeLight" and fell back
+  to dark text); all Lumen foregrounds forced light.
+- **Wallpaper cleanup**: only the Lumen (Nebula) wallpaper package remains
+  in `/usr/share/wallpapers`.
+- **PLM greeter branding**: `files/etc/plasmalogin.conf.d/lumen.conf` pins
+  the greeter to the org.kde.image wallpaper plugin.
+- **MangoHud flatpak layer dropped** (multi-branch ref aborts the
+  system-flatpak-setup batch; MangoHud stays as an RPM).
 
 - **Gaming flatpaks**: add RetroArch, PCSX2, Dolphin, DuckStation to all
   three recipes.

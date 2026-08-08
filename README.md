@@ -32,7 +32,12 @@ and Fedora themes so only Lumen is selectable:
 - **Global theme** `org.lumenora.lumen.desktop` applied to new users via
   `kdeglobals`/`plasmarc` defaults in `/etc/skel` and the kde profile.
 - **Default wallpaper**: the deep-space Tarantula Nebula image, shipped as
-  the `Lumen` wallpaper package and wired in as the fresh-desktop default.
+  the `Lumen` wallpaper package and wired in as the fresh-desktop default;
+  all stock wallpapers are removed so only `Lumen` remains.
+- **Light text everywhere**: the palette forces light foregrounds, and the
+  `BreezeLight`/`BreezeDark` scheme names are rebuilt from the Lumen palette
+  (they are hard-requested by the Plasma Login Manager greeter), fixing
+  "dark text on dark background" in the greeter and the desktop.
 - **Snappier animations**: `AnimationDurationFactor=0.5`.
 - **Layout identical to stock KDE Plasma** (default panels/widgets).
 - The Breeze window decoration engine remains (it follows the Lumen color
@@ -84,9 +89,12 @@ default for bootc images and the Anaconda installer flow):
 
 Lumenora includes GameMode, MangoHud, Gamescope, Distrobox, Bazaar Store,
 Oh My Posh, Fastfetch, and Eza, plus gaming flatpaks (Steam, Lutris, Heroic,
-Bottles, OBS) installed system-wide from Flathub. Kernel drivers for Intel and
-AMD GPUs come from the open-source drivers already built into the Linux
-kernel; no driver packages are layered for them.
+Bottles, OBS, RetroArch, PCSX2, Dolphin, DuckStation) installed system-wide
+from Flathub. **fish** is the default login shell for new user accounts and
+for users created at install time (first-boot one-shot), with fastfetch
+running on interactive startup via the shipped skel dotfiles. Kernel drivers
+for Intel and AMD GPUs come from the open-source drivers already built into
+the Linux kernel; no driver packages are layered for them.
 
 ## GPU driver handling
 

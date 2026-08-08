@@ -1,0 +1,58 @@
+/* Lumenora Anaconda branding — deep space blue/purple hybrid */
+/* Loaded from /usr/share/anaconda/anaconda-gtk.css in the installer env. */
+
+/* theme colors/images */
+@define-color lumen_bg_color #1c1736;
+@define-color lumen_accent #6a5cff;
+@define-color lumen_accent_light #b388ff;
+@define-color lumen_topbar #2a2157;
+@define-color lumen_text #e9e7f5;
+@define-color lumen_accent_light #b388ff;
+
+/* logo and sidebar classes */
+.logo-sidebar {
+    background-image: url('/usr/share/anaconda/pixmaps/sidebar-bg.png');
+    background-color: @lumen_bg_color;
+    background-repeat: no-repeat;
+}
+
+/* Add a logo to the sidebar */
+.logo {
+    background-image: url('/usr/share/anaconda/pixmaps/sidebar-logo.png');
+    background-position: 50% 20px;
+    background-repeat: no-repeat;
+    background-color: transparent;
+}
+
+/* Lumenora product logo placeholder */
+.product-logo {
+    background-image: none;
+    background-color: transparent;
+}
+
+AnacondaSpokeWindow #nav-box {
+    background-color: @lumen_topbar;
+    background-image: url('/usr/share/anaconda/pixmaps/topbar-bg.png');
+    background-repeat: repeat-x;
+    color: @lumen_text;
+}
+
+/* Keep hub-and-spoke body text readable on dark */
+AnacondaSpokeWindow {
+    background-color: @lumen_bg_color;
+    color: @lumen_text;
+}
+
+/* Accent highlights (primary buttons, selected entries) */
+AnacondaSpokeWindow button:checked,
+AnacondaSpokeWindow .destructive-action,
+AnacondaSpokeWindow treeview:selected {
+    background-color: @lumen_accent;
+    color: #ffffff;
+}
+
+/* Slightly lighter labels for emphasis */
+.label-big,
+.title-label {
+    color: @lumen_accent_light;
+}

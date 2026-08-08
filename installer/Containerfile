@@ -31,6 +31,10 @@ COPY iso.yaml /usr/lib/image-builder/bootc/iso.yaml
 # Anaconda will install the Lumenora payload supplied by the image-builder job.
 COPY interactive-defaults.ks /usr/share/anaconda/interactive-defaults.ks
 
+# Lumen-branded installer UI (sidebar, top bar, logo, text colors)
+COPY anaconda-gtk.css /usr/share/anaconda/anaconda-gtk.css
+COPY pixmaps/ /usr/share/anaconda/pixmaps/
+
 RUN echo "install:x:0:0:root:/root:/usr/libexec/anaconda/run-anaconda" >> /etc/passwd && \
     echo "install::14438:0:99999:7:::" >> /etc/shadow && \
     passwd -d root && \

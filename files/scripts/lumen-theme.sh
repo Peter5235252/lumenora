@@ -245,7 +245,45 @@ rm -rf "${LAF}/org.fedoraproject.fedoralight.desktop"
 rm -rf "${LAF}/org.fedoraproject.fedoradark.desktop"
 rm -rf "${DT}/breeze-dark"
 rm -rf "${DT}/breeze-light"
-rm -f "${CS}/BreezeLight.colors" "${CS}/BreezeDark.colors" "${CS}/BreezeClassic.colors"
+rm -f "${CS}/BreezeClassic.colors"
+
+# The PLM greeter (Plasma Login Manager) hard-uses the color scheme named
+# "BreezeLight" ("Could not find color scheme BreezeLight, falling back")
+# and Breeze consumers reference "BreezeDark". Do NOT delete those names;
+# rebuild them on the Lumen palette so any fallback resolves to light text
+# on the deep-space scheme instead of the stock dark-text palette.
+for scheme in BreezeLight BreezeDark; do
+  cp "${CS}/Lumen.colors" "${CS}/${scheme}.colors"
+  python3 - "${CS}/${scheme}.colors" "$scheme" <<'PY'
+import sys
+p, name = sys.argv[1], sys.argv[2]
+text = open(p).read()
+import re
+text = re.sub(r"(?ms)^\[General\].*?(?=^\[)", "[General]\nName=" + name + "\nshadeSortColumn=true\n\n", text, count=1)
+open(p, "w").write(text)
+PY
+done
+# explicit light foregrounds everywhere (belt and braces)
+python3 - <<'PY'
+import re
+p = "/usr/share/color-schemes/Lumen.colors"
+t = open(p).read()
+for sec in ["Complementary", "View", "Window", "Button", "Selection", "Tooltip"]:
+    t = re.sub(
+        rf"(?ms)^\[Colors:{sec}\].*?(?=^\[|$)",
+        lambda m: re.sub(r"(?m)^(Foreground(Normal|Alternate|Inactive|Link|Visited|Positive|Negative|Neutral|Active))=.+",
+                         r"\g<1>=#ffffff", m.group(0)),
+        t, count=1)
+open(p, "w").write(t)
+print("forced light foregrounds in Lumen") 
+PY
+# PLM greeter text is guaranteed light by the BreezeLight/Lumen palette
+# rebuilt above (the greeter requests the "BreezeLight" scheme by name).
+
+# --- 5b. Only the Lumen (cosmic Nebula) wallpaper stays -----------------
+find "${WP}" -mindepth 1 -maxdepth 1 ! -name Lumen -exec rm -rf {} +
+echo "==> Wallpapers remaining:"
+ls "${WP}"
 
 # --- 6. Fresh-desktop fallback wallpaper (org.kde.image defaults) ------
 python3 - <<'PY'

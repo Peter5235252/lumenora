@@ -13,6 +13,7 @@ modules:
     scripts:
       - swap-ogc-kernel.sh
       - dedup-home-subvol.sh
+      - fish-default.sh
       - lumen-theme.sh
 
   - type: akmods
@@ -36,6 +37,7 @@ modules:
       - gamescope
       - oh-my-posh
       - eza
+      - fish
 
   - type: default-flatpaks
     configurations:
@@ -48,6 +50,10 @@ modules:
           - com.heroicgameslauncher.hgl
           - com.usebottles.bottles
           - com.obsproject.Studio
+          - org.libretro.RetroArch
+          - net.pcsx2.PCSX2
+          - org.DolphinEmu.dolphin-emu
+          - org.duckstation.DuckStation
 
   - type: files
     files:

@@ -39,28 +39,6 @@ ProtonPlus lands in the system flatpak batch).
 - **MangoHud flatpak layer dropped** (multi-branch ref aborts the
   system-flatpak-setup batch; MangoHud stays as an RPM).
 
-- **Gaming flatpaks**: add RetroArch, PCSX2, Dolphin, DuckStation to all
-  three recipes.
-- **fish as default shell**: `fish-default.sh` sets useradd's default and a
-  first-boot `lumenora-fish-default.service` that flips existing accounts
-  (UID 1000-65533) to fish; fastfetch already runs on interactive startup
-  via the skel dotfiles.
-- **Anaconda installer branding**: `installer/anaconda-gtk.css` (Lumen
-  colors) plus pixmaps (sidebar background/logo, top bar) shipped into the
-  installer container.
-- **Light text fix**: BreezeLight/BreezeDark scheme names are rebuilt from
-  the Lumen palette (PLM's greeter hard-requests "BreezeLight" and fell back
-  to dark text); all Lumen foregrounds forced light.
-- **Wallpaper cleanup**: only the Lumen (Nebula) wallpaper package remains
-  in `/usr/share/wallpapers`.
-- **PLM greeter branding**: `files/etc/plasmalogin.conf.d/lumen.conf` pins
-  the greeter to the org.kde.image wallpaper plugin.
-- **fish fixes**: oh-my-posh invoked from PATH instead of `~/.local/bin`;
-  canonical `/var/home/<user>` home directories so the prompt shows `~`
-  instead of `/v/h/<user>`.
-- **MangoHud flatpak layer dropped** (multi-branch ref aborts the
-  system-flatpak-setup batch; MangoHud stays as an RPM).
-
 ## v0.7.1-alpha - 2026-08-08 (UNSTABLE backup build)
 
 Version-bumped backup snapshot of the current `main` (v0.7.0-alpha + license

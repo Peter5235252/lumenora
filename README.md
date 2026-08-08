@@ -193,8 +193,9 @@ production deployments.
 
 ## Releases
 
-- `main` (unreleased) — GRUB2/shim restored (systemd-boot-only reverted),
-  latest KDE Plasma 6.7.x, Lumen theming.
+- `v0.7.0-alpha` — latest. GRUB2/shim restored (systemd-boot-only reverted),
+  latest KDE Plasma 6.7.x, Lumen theming, and a fixed OGC kernel that ships
+  its initramfs (fresh installs no longer kernel-panic on first boot).
 - `v0.6.5-alpha` — GRUB replaced by systemd-boot as the only bootloader
   (Secure Boot off until custom key enrollment); kernel unchanged.
   **Reverted on `main`.**

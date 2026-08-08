@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.7.0-alpha - 2026-08-08
 
 KDE Plasma branding ("Lumen"):
 
@@ -30,6 +30,18 @@ GRUB bootloader restored:
 - GRUB2, shim, and bootupd ship stock again, so Secure Boot works with the
   Fedora-signed shim chain and the Anaconda installer ISO flow works.
 - Kernel and theming work unchanged (OGC pinned 7.1.6-ogc4.1-fc44, Lumen).
+
+OGC kernel initramfs fix:
+
+- The swapped-in OGC kernel shipped **no initramfs** — the kernel `%post`
+  dracut run is shimmed to a no-op at build time, so deploys copied only
+  `vmlinuz` to the boot partition and first boot kernel-panicked with
+  `VFS: Unable to mount root fs on unknown-block(0,0)`.
+- `files/scripts/swap-ogc-kernel.sh` now regenerates the initramfs
+  (`dracut --add ostree --no-hostonly`) into `/usr/lib/modules/<kver>/`, so
+  every deploy ships its initrd and fresh installs boot normally. Verified
+  by installing the vanilla ISO in GNOME Boxes: the fix booted the deploy
+  through systemd switch-root.
 
 ## v0.6.5-alpha - 2026-08-07
 

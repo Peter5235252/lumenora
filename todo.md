@@ -1,6 +1,7 @@
 # Lumenora Migration Plan
 
-Status: GRUB bootloader restored + Lumen Plasma theming on `main` (unreleased).
+Status: v0.7.0-alpha released — GRUB restored + Lumen Plasma theming +
+OGC-kernel initramfs fix on `main`.
 
 ## Phase 7 - GRUB restore + ISO/VM test (unreleased)
 - [x] Diagnose failed mid-install (Boxes): full deployment written, ESP left
@@ -9,12 +10,20 @@ Status: GRUB bootloader restored + Lumen Plasma theming on `main` (unreleased).
 - [x] Revert to GRUB: remove `force-systemd-boot.sh` from all recipes, delete
       script + `00-lumenora.toml`; grub2/shim/bootupd ship stock again
       (Secure Boot + Anaconda ISO path work again)
-- [ ] Local rebuild base + validate grub restored (no systemd-boot-unsigned,
+- [x] Local rebuild base + validate grub restored (no systemd-boot-unsigned,
       no 00-lumenora.toml), OGC kernel + Lumen intact
-- [ ] Push to main + green Actions build
-- [ ] Build fresh installer ISO from the reverted image
-- [ ] Install ISO in GNOME Boxes (user session; pkexec Boxes segfaults)
-- [ ] VM sanity check: Lumen theme, nebula wallpaper, Plasma 6.7.4,
+- [x] Push to main + green Actions build
+- [x] Build fresh installer ISO from the reverted image
+- [x] Install vanilla ISO in GNOME Boxes — install **succeeded** but first
+      boot **kernel-panicked** (`VFS: Unable to mount root fs on
+      unknown-block(0,0)`). Root cause: the OGC kernel ships no initramfs
+      (dracut `%post` shimmed to a no-op at build), so deploy boot has no
+      `initrd` line. Fix: `files/scripts/swap-ogc-kernel.sh` regens the
+      initramfs (`dracut --add ostree --no-hostonly`). Verified by injecting
+      a manually-built initramfs into the stalled VM: it then booted through
+      systemd switch-root.
+- [x] Tag v0.7.0-alpha + release notes (all fix CI builds green).
+- [x] VM sanity check: Lumen theme, nebula wallpaper, Plasma 6.7.4,
       OGC 7.1.6-ogc4.1 kernel, GRUB boot, Secure Boot shim intact
 
 ## Phase 6 - KDE Plasma branding "Lumen" (unreleased)

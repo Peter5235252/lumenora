@@ -46,6 +46,7 @@ modules:
       - plasma-discover-notifier
       - plasma-discover-rpm-ostree
       - kwrite
+      - kde-connect
       - kdeconnectd
       - kfind
       - kcharselect

@@ -19,3 +19,43 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+Scope of this license
+
+The MIT license above applies ONLY to the project's own original scripts,
+recipes, and configuration files written for Lumenora. These are:
+
+  - the BlueBuild recipes under `recipes/`
+  - the build scripts under `files/scripts/` and `scripts/`
+  - the customization/configuration files under `files/` (skel dotfiles,
+    MangoHud/GameMode configs, Lumen Plasma theme, wallpapers, systemd units,
+    the GPU-detection tooling under `files/usr/`)
+  - the `Containerfile`, `installer/` definitions, and the GitHub Actions
+    workflows under `.github/`
+
+All other software bundled into or referenced by Lumenora is NOT covered by
+the MIT license above. Lumenora is an ostree/bootc image built on top of
+Fedora Atomic Desktop (Kinoite) and aggregates many independent, separately
+licensed components. Those components remain governed by their own licenses:
+
+  - Fedora / the kernel and core system: GPL-2.0 (or later) and the Fedora
+    licensing policy.
+  - The Linux kernel is under GPL-2.0-only; any GPL components you build or
+    ship as part of a distribution of Lumenora must be redistributed in
+    compliance with their respective GPL obligations.
+  - KDE Plasma, KDE Gear, and Qt are under the LGPL-2.1-or-later / GPL-2.0-
+    or-later / GFDL family of licenses.
+  - The Open Game Collective (OGC) gaming kernel is a derived kernel and is
+    GPL-2.0.
+  - NVIDIA driver rpms, akmods builds, and nvidia-container-toolkit packages
+    are under the NVIDIA license and applicable open-source licenses; they
+    are redistributed by the installation process, not by this project.
+  - All other packaged applications, libraries, and binary components keep
+    their upstream licenses.
+
+This image is built and redistributed in accordance with Fedora's legal
+guidelines. Users are responsible for ensuring that any redistribution of
+the image or its binaries complies with the individual licenses of the
+included components, including GNU GPL copyleft obligations.

@@ -95,6 +95,30 @@ lock_kernel_version() {
   fi
 }
 
+# The kernel %post dracut runs are shimmed out (see shim_kernel_install_hooks),
+# so the OGC kernel is installed WITHOUT an initramfs. Without it, the boot
+# partition has no initrd for the deploy and GRUB builds a BLS entry that
+# lacks an `initrd` line -> VFS "Unable to mount root fs" kernel panic on a
+# fresh install. Regenerate the initramfs here so `/usr/lib/modules/<kver>/`
+# ships one and rpm-ostree copies it onto the boot partition at deploy time.
+generate_initramfs() {
+  local kver
+  kver="$(basename "$(ls -d /usr/lib/modules/*.fc${FEDORA_VERSION}.x86_64 2>/dev/null | head -1)")"
+  if [[ -z "${kver}" ]]; then
+    echo "WARNING: no OGC kernel module dir found; skipping initramfs generation"
+    return 0
+  fi
+  if command -v dracut >/dev/null 2>&1; then
+    echo "==> Generating initramfs for ${kver}"
+    dracut --force --no-hostonly --tmpdir /tmp \
+      --kver "${kver}" --add ostree \
+      "/usr/lib/modules/${kver}/initramfs.img" || \
+      echo "WARNING: dracut failed; initramfs may be incomplete"
+  else
+    echo "WARNING: dracut not available; nothing to generate"
+  fi
+}
+
 echo "==> Swapping stock kernel for OGC ${OGC_KERNEL_TAG} (Fedora ${FEDORA_VERSION})"
 shim_kernel_install_hooks
 remove_stock_kernel
@@ -103,6 +127,7 @@ extract_rpms
 install_ogc_kernel
 lock_kernel_version
 restore_kernel_install_hooks
+generate_initramfs
 
 echo "==> Installed kernels:"
 rpm -q kernel kernel-core kernel-modules kernel-devel kernel-devel-matched kernel-headers kernel-tools || true

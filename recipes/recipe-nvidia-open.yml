@@ -47,6 +47,7 @@ modules:
       - plasma-discover-rpm-ostree
       - kwrite
       - kde-connect
+      - kde-connect-libs
       - kdeconnectd
       - kfind
       - kcharselect

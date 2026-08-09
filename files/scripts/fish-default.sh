@@ -14,6 +14,11 @@ set -euo pipefail
 # passwd entry keeps the symlinked /home/<user>, a session that starts at
 # /var/home/<user> renders /v/h/<user> in the prompt instead of "~" because
 # fish only abbreviates $HOME when PWD starts with it.
+#
+# It additionally pins the Lumen look (color scheme + look-and-feel) on every
+# human account: homes created before the stock Plasma themes were dropped
+# reference the removed "org.kde.breeze.desktop", and Plasma's fallback to
+# the embedded LIGHT Breeze renders black text over the dark UI.
 
 # --- 1. Default for future useradd calls --------------------------------
 USERADD_DEF=/etc/default/useradd
@@ -50,6 +55,21 @@ for pw in $(getent passwd); do
         passwdhome=$(awk -F: '{print $6}' <<<"$pw")
         if [ -n "$realhome" ] && [ "$realhome" != "$passwdhome" ] && [ -d "$realhome" ]; then
             usermod -d "$realhome" "$user" || true
+        fi
+    fi
+    # Force the Lumen look on accounts whose home pre-dates the theming:
+    # those born before the stock themes were dropped carry a kdeglobals
+    # pointing at the now-removed org.kde.breeze.desktop, and Plasma then
+    # falls back to the embedded LIGHT Breeze — black text over the dark
+    # chrome, unreadable everywhere. Pin scheme + look-and-feel, drop the
+    # stale hash so the white foregrounds get regenerated.
+    if [ "$uid" -ge 1000 ] && [ "$uid" -lt 65534 ]; then
+        home=$(awk -F: '{print $6}' <<<"$pw")
+        if [ -d "$home" ] && command -v kwriteconfig6 >/dev/null 2>&1; then
+            export HOME="$home" XDG_CONFIG_HOME="$home/.config"
+            kwriteconfig6 --file kdeglobals --group General --key ColorScheme "Lumen" || true
+            kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage "org.lumenora.lumen.desktop" || true
+            kwriteconfig6 --file kdeglobals --group General --unset ColorSchemeHash || true
         fi
     fi
 done

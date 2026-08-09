@@ -133,6 +133,24 @@ EOF
 # normalize it (empty look-and-feel bug guard).
 sed -i 's/^BackgroundNormal=Void$/BackgroundNormal=#241b47/' "${CS}/Lumen.colors"
 
+# --- 1b. Force EVERY foreground to pure white before anything is copied ---
+# (the desktoptheme colors file and the BreezeLight/BreezeDark regenerations
+#  below are all derived from this file, so doing the pass here guarantees
+#  white text everywhere: apps, panels, tooltips, PLM greeter.)
+python3 - <<'PY'
+import re
+p = "/usr/share/color-schemes/Lumen.colors"
+t = open(p).read()
+for sec in ["Complementary", "View", "Window", "Button", "Selection", "Tooltip"]:
+    t = re.sub(
+        rf"(?ms)^\[Colors:{sec}\].*?(?=^\[|$)",
+        lambda m: re.sub(r"(?m)^(Foreground(Normal|Alternate|Inactive|Link|Visited|Positive|Negative|Neutral|Active))=.+",
+                         r"\g<1>=#ffffff", m.group(0)),
+        t, count=1)
+open(p, "w").write(t)
+print("forced pure-white foregrounds in Lumen.colors")
+PY
+
 # --- 2. Lumen global theme (look-and-feel) ------------------------------
 rm -rf "${LAF}/org.lumenora.lumen.desktop"
 cp -a "${LAF}/org.kde.breezedark.desktop" "${LAF}/org.lumenora.lumen.desktop"
@@ -250,7 +268,7 @@ rm -f "${CS}/BreezeClassic.colors"
 # The PLM greeter (Plasma Login Manager) hard-uses the color scheme named
 # "BreezeLight" ("Could not find color scheme BreezeLight, falling back")
 # and Breeze consumers reference "BreezeDark". Do NOT delete those names;
-# rebuild them on the Lumen palette so any fallback resolves to light text
+# rebuild them on the Lumen palette so any fallback resolves to white text
 # on the deep-space scheme instead of the stock dark-text palette.
 for scheme in BreezeLight BreezeDark; do
   cp "${CS}/Lumen.colors" "${CS}/${scheme}.colors"
@@ -263,22 +281,6 @@ text = re.sub(r"(?ms)^\[General\].*?(?=^\[)", "[General]\nName=" + name + "\nsha
 open(p, "w").write(text)
 PY
 done
-# explicit light foregrounds everywhere (belt and braces)
-python3 - <<'PY'
-import re
-p = "/usr/share/color-schemes/Lumen.colors"
-t = open(p).read()
-for sec in ["Complementary", "View", "Window", "Button", "Selection", "Tooltip"]:
-    t = re.sub(
-        rf"(?ms)^\[Colors:{sec}\].*?(?=^\[|$)",
-        lambda m: re.sub(r"(?m)^(Foreground(Normal|Alternate|Inactive|Link|Visited|Positive|Negative|Neutral|Active))=.+",
-                         r"\g<1>=#ffffff", m.group(0)),
-        t, count=1)
-open(p, "w").write(t)
-print("forced light foregrounds in Lumen") 
-PY
-# PLM greeter text is guaranteed light by the BreezeLight/Lumen palette
-# rebuilt above (the greeter requests the "BreezeLight" scheme by name).
 
 # --- 5b. Only the Lumen (cosmic Nebula) wallpaper stays -----------------
 find "${WP}" -mindepth 1 -maxdepth 1 ! -name Lumen -exec rm -rf {} +

@@ -47,6 +47,8 @@ modules:
       - kfind
       - kcharselect
       - khelpcenter
+      - plasma-welcome
+      - plasma-welcome-fedora
 
   - type: default-flatpaks
     configurations:

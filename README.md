@@ -208,13 +208,22 @@ production deployments.
 
 ## Releases
 
-- `v0.7.5-alpha` — current. Welcome Center removed, Lumen is the only
-  selectable Plasma theme, white text forced at the source (`#ffffff` on all
+- `v0.8.0-beta.1` — **current. First beta.** Dark-text bug fixed at its root
+  cause: `Lumen.colors` was missing `ForegroundNormal` in
+  `[Colors:View]`, `[Colors:Complementary]` and `[Colors:Tooltip]`, so KDE
+  fell back to its default near-black `#232629` text. The white pass now
+  *adds* the missing keys and per-section asserts fail the build if any
+  surface lacks them; LAF/Plasma-Style/fallback versions bumped so stale
+  theme caches are invalidated. Verified live in the VM after rebase on the
+  fixed image: light text in apps, panels, decorations, and the PLM greeter
+  (which shows the blurred nebula). **⚠ NVIDIA variants not tested** —
+  see the banner at the top of this file.
+- `v0.7.5-alpha` — white text forced at the source (`#ffffff` on all
   `Foreground*` in `Lumen.colors` before derived copies), existing accounts
   pinned to Lumen at first boot (`AutomaticLookAndFeel=false` to stop Plasma
-  re-resolving to the deleted stock look). **Known rough edge: dark text is
-  still reported in some Plasma surfaces; fix verified headless in the VM,
-  not yet confirmed visually at the greeter/login.**
+  re-resolving to the deleted stock look), Welcome Center removed. Its
+  rewrite pass was a no-op for sections without `ForegroundNormal`, which the
+  v0.8.0-beta.1 fix lands.
 - `v0.7.4-alpha` — PLM greeter shows the Lumen wallpaper (Fedora's
   `defaults.conf` overridden in-image after the black-screen regression),
   OGC kernel pin bumped to `7.1.7-ogc1.1-fc44` to match the akmods buildroot.

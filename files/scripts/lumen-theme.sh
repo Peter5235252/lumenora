@@ -137,13 +137,15 @@ sed -i 's/^BackgroundNormal=Void$/BackgroundNormal=#241b47/' "${CS}/Lumen.colors
 # HAARD GUARD: do NOT derive foregrounds. Text that is not #ffffff on the
 # deep-space scheme is unreadable (dark text on the nebula surfaces). This
 # pass rebuilds the file line-by-line: every Foreground* key is rewritten
-# to #ffffff, and accent keys (Link/Visited/Active) keep their blue/purple
-# hue but are LIGHTENED so they stay distinguishable on dark planes.
+# to #ffffff, missing ForegroundNormal keys are added, and accent keys
+# (Link/Visited/Active) keep their blue/purple hue but are LIGHTENED so they
+# stay distinguishable on dark planes.
 python3 - <<'PY'
 import re
 p = "/usr/share/color-schemes/Lumen.colors"
 lines = open(p).read().splitlines()
 fg_re = re.compile(r"^Foreground\w*=")
+color_sections = {"Complementary", "View", "Window", "Button", "Selection", "Tooltip"}
 # accent keys mapped to slightly lighter blue/purple (visible on #14102a)
 accent = {
     "ForegroundLink": "#a3c4ff",       # lighter blue  (#82aaff -> up)
@@ -152,11 +154,25 @@ accent = {
     "ForegroundInactive": "#d9d5ea",
 }
 out = []
+section = None
+has_normal = False
 for ln in lines:
+    if ln.startswith("["):
+        if section in color_sections and not has_normal:
+            out.append("ForegroundNormal=#ffffff")
+        match = re.fullmatch(r"\[Colors:(.+)\]", ln)
+        section = match.group(1) if match else None
+        has_normal = False
+        out.append(ln)
+        continue
     if fg_re.match(ln):
         key = ln.split("=", 1)[0]
         ln = f"{key}={accent.get(key, '#ffffff')}"
+        if key == "ForegroundNormal":
+            has_normal = True
     out.append(ln)
+if section in color_sections and not has_normal:
+    out.append("ForegroundNormal=#ffffff")
 open(p, "w").write("\n".join(out) + "\n")
 print("REBUILT Lumen.colors: all Foreground*={} or lightened accents".format("#ffffff"))
 PY
@@ -172,7 +188,12 @@ if [[ -n "$BAD" ]]; then
 fi
 grep -qE '^ForegroundNormal=#ffffff$' "${CS}/Lumen.colors" \
   || { echo "FATAL: ForegroundNormal is not pure white" >&2; exit 1; }
-echo "==> assert: Lumen.colors has only white/light foregrounds"
+# Every color group must carry ForegroundNormal: a missing key makes KDE fall
+# back to the default (dark #232629) text, which is how black text survived
+# the rewrite pass before. Reject any section without it.
+awk -F']' '/^\[Colors:/{s=$0} /^ForegroundNormal=#ffffff$/{s=""} END{exit (s!="")}' "${CS}/Lumen.colors" \
+  || { echo "FATAL: a [Colors:*] section lacks ForegroundNormal=#ffffff" >&2; exit 1; }
+echo "==> assert: Lumen.colors has only white/light foregrounds, none missing"
 
 # --- 2. Lumen global theme (look-and-feel) ------------------------------
 rm -rf "${LAF}/org.lumenora.lumen.desktop"
@@ -191,7 +212,7 @@ with open(p) as f:
 k = j.setdefault("KPlugin", {})
 k["Id"] = "org.lumenora.lumen.desktop"
 k["Name"] = "Lumen"
-k["Version"] = "0.7.5"
+k["Version"] = "0.7.6"
 k["Comment"] = "Lumenora default: deep space blue/purple hybrid"
 for key in [x for x in k if x.startswith("Name[")]:
     del k[key]
@@ -239,7 +260,7 @@ with open(p) as f:
 k = j.setdefault("KPlugin", {})
 k["Id"] = "Lumen"
 k["Name"] = "Lumen"
-k["Version"] = "0.7.5"
+k["Version"] = "0.7.6"
 k["Comment"] = "Lumenora Plasma Style (deep space blue/purple)"
 for key in [x for x in k if x.startswith("Name[")]:
     del k[key]
@@ -272,7 +293,7 @@ p = "/usr/share/plasma/desktoptheme/default/metadata.json"
 with open(p) as f:
     j = json.load(f)
 k = j.setdefault("KPlugin", {})
-k["Version"] = k.get("Version", "1.0") + "-lumen7"
+k["Version"] = k.get("Version", "1.0") + "-lumen8"
 with open(p, "w") as f:
     json.dump(j, f, indent=1)
 PY

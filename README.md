@@ -101,7 +101,7 @@ the Linux kernel; no driver packages are layered for them.
 Lumenora is immutable (bootc): packages cannot be layered at runtime with
 standard `dnf`. Instead:
 
-- **Intel/AMD**: nothing is installed; the open kernel drivers are used.
+- **Intel/AMD**: nothing is installed; the open-source kernel drivers are used.
 - **NVIDIA**: a first-boot service detects the GPU with `lspci` and rebases
   the system to an NVIDIA variant image using `bootc switch`, then reboots.
   The NVIDIA images are built with the same BlueBuild recipe plus the akmods

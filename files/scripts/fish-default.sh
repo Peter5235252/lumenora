@@ -40,7 +40,7 @@ set -euo pipefail
 [ -x /usr/bin/fish ] || exit 0
 
 # shellcheck disable=SC2044
-for pw in $(getent passwd); do
+while IFS= read -r pw; do
     user="${pw%%:*}"
     uid=$(awk -F: '{print $3}' <<<"$pw")
     shell=$(awk -F: '{print $7}' <<<"$pw")
@@ -69,10 +69,10 @@ for pw in $(getent passwd); do
             export HOME="$home" XDG_CONFIG_HOME="$home/.config"
             kwriteconfig6 --file kdeglobals --group General --key ColorScheme "Lumen" || true
             kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage "org.lumenora.lumen.desktop" || true
-            kwriteconfig6 --file kdeglobals --group General --unset ColorSchemeHash || true
+            kwriteconfig6 --file kdeglobals --group General --delete --key ColorSchemeHash || true
         fi
     fi
-done
+done < <(getent passwd)
 
 systemd-notify --ready 2>/dev/null || true
 EOS

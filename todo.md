@@ -1,7 +1,6 @@
-Status: v0.7.1-alpha (unstable backup) tagged — PLM boot verified in VM; Plasma session start under investigation.
+Status: v0.7.4-alpha current — PLM greeter wallpaper fixed + kernel pin bumped; approaching beta.
 
-Status: v0.7.0-alpha released — GRUB restored + Lumen Plasma theming +
-OGC-kernel initramfs fix on `main`.
+Status: v0.7.3-alpha released (debloat round).
 
 ## Phase 7 - GRUB restore + ISO/VM test (unreleased)
 - [x] Diagnose failed mid-install (Boxes): full deployment written, ESP left

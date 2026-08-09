@@ -201,6 +201,12 @@ production deployments.
 
 ## Releases
 
+- `v0.7.4-alpha` — current. PLM greeter shows the Lumen wallpaper (Fedora's
+  `defaults.conf` overridden in-image after the black-screen regression),
+  OGC kernel pin bumped to `7.1.7-ogc1.1-fc44` to match the akmods buildroot.
+- `v0.7.3-alpha` — debloat round: Discover + extra apps removed, Konsole/
+  Bazaar dock pins, ProtonPlus + gaming flatpaks, fish default shell,
+  Anaconda installer branding, light-text greeter fix, rebuilt wallpapers.
 - `v0.7.1-alpha` — unstable backup snapshot of `main` (v0.7.0-alpha +
   license scope). Also carries the verified fstab fix for the PLM session
   bounce (empty btrfs `home` subvolume was shadowing `/home -> var/home`).

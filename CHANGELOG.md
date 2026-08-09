@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.7.4-alpha - 2026-08-09
+
+Stability round on the v0.7.3 debloat: the Plasma Login Manager greeter now
+actually renders the Lumen Nebula wallpaper (was black after the Fedora
+wallpaper cleanup), and the OGC kernel pin tracks the akmods buildroot again.
+
+- **PLM greeter wallpaper fixed**: Fedora ships
+  `/usr/lib/plasmalogin/defaults.conf` with
+  `Image=file:///usr/share/wallpapers/Fedora/`; that compiled-in system
+  config beats the `/etc/plasmalogin.conf.d/*` drop-ins in the KConfig
+  cascade, so the greeter fell back to a black screen once the cleanup
+  removed `/usr/share/wallpapers/Fedora/`. The image now ships its own
+  `defaults.conf` pointing at `/usr/share/wallpapers/Lumen/.../nebula.jpg`
+  (`files/usr/lib/plasmalogin/defaults.conf`); `files/etc/plasmalogin.conf.d/
+  lumen.conf` repeats it for user-level overrides. Verified live in the VM:
+  the login screen shows the nebula.
+- **OGC kernel pin bumped** `7.1.6-ogc5.1-fc44` -> `7.1.7-ogc1.1-fc44`:
+  the akmods `ogc-44` buildroot rebuilt for the newer kernel, and the guard
+  in `files/scripts/swap-ogc-kernel.sh` (buildroot kernel must equal shipped
+  kernel) was fatally aborting all three image builds.
+
 ## v0.7.3-alpha - 2026-08-08
 
 App/packaging debloat round on top of the v0.7.2 polish (builds clean on

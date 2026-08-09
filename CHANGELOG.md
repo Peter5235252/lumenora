@@ -36,11 +36,12 @@ experimental until verified.
 ### Roadmap
 
 A **stable release (exiting beta)** could land **anytime between August and
-even November** — whenever validation is done and enough time is available.
-This is a **solo project** currently on summer break, and work returns in
-September, so progress depends heavily on personal time and can easily stall
-or burn out. Releases may lag GitHub activity; treating releases as the
-source of truth for what is actually shippable.
+even November** — whenever validation is done and I have enough time. I'm a
+**solo developer currently on summer break**, and I return to work in
+September, so progress depends heavily on my personal time and can easily
+stall or burn out. In the **worst case**, the stable release could ship as
+late as **early 2027**. Releases may lag GitHub activity; treating releases
+as the source of truth for what is actually shippable.
 
 White-text lockdown, at last done right. The previous round's "force pure
 white" pass was a silent no-op — its regex matched only the `[Colors:...]`

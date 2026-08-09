@@ -1,4 +1,16 @@
-Status: v0.7.5-alpha current — Lumen-only theme + white-text lockdown shipped; dark text root cause FOUND (LAF metadata Id mismatch) and fixed in caccd50; pending visual confirmation of the new VM build.
+Status: v0.8.0-beta.1 current (FIRST BETA). Black-text root cause closed
+(missing ForegroundNormal keys in View/Complementary/Tooltip -> KDE default
+#232629); whitelist + per-section asserts added; version bumps clear stale
+theme caches; base image verified live in the VM (light text in apps, panels,
+decorations, PLM greeter with blurred nebula). NVIDIA variants (lumenora-nvidia
+/ lumenora-nvidia-open) compile but are UNTESTED — flagged in README, CHANGELOG
+ and release notes; next priority is validating them on NVIDIA hardware.
+
+## Phase 10 - Beta 1 (released v0.8.0-beta.1)
+- [x] REBASE VM onto the fixed image and confirm light text post-reboot
+- [x] NVIDIA-untested warning added to README + CHANGELOG + release notes
+- [ ] Validate lumenora-nvidia / lumenora-nvidia-open on real NVIDIA hardware
+      (open vs proprietary per-GPU selection not yet exercised)
 
 Status: v0.7.5-alpha (rev 2) — MORE dark text found: the "force pure-white
 foregrounds" pass in lumen-theme.sh was a NO-OP (regex matched only the

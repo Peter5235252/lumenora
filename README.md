@@ -1,10 +1,17 @@
 # Lumenora
 
-> **EARLY ALPHA**
+> **BETA**
 >
-> Lumenora is an early alpha. Expect bugs, stability issues, and missing
-> features. It is not recommended as a daily driver yet. Test it in a VM
-> before using it on real hardware.
+> Lumenora reaches its first beta. The base image (no GPU-specific variant)
+> is validated in a VM, the "dark text on dark background" theming bug is
+> fixed, and the white-text lockdown is confirmed on a live session. It is
+> still early software — test in a VM before using it on real hardware.
+>
+> > **⚠ NVIDIA variants not tested yet**
+> >
+> > The `lumenora-nvidia` and `lumenora-nvidia-open` variants compile and
+> > publish cleanly, but they have **not** been booted or validated on NVIDIA
+> > hardware at any point. Do not rely on them until they have been verified.
 
 [![GitHub release](https://img.shields.io/github/v/release/peter5235252/lumenora)](https://github.com/peter5235252/lumenora/releases)
 [![Image build](https://github.com/peter5235252/lumenora/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/peter5235252/lumenora/actions/workflows/build.yml)

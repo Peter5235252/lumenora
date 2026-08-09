@@ -1,6 +1,37 @@
 # Changelog
 
-## v0.7.5-alpha (rev 2) - 2026-08-09
+## v0.8.0-beta.1 - 2026-08-09
+
+First beta. The long-running dark-text bug is finally closed at its root
+cause, and the base image is verified live in a VM.
+
+- **Root cause of the persistent black text (finally found).**
+  `[Colors:View]`, `[Colors:Complementary]` and `[Colors:Tooltip]` had *no*
+  `ForegroundNormal` key in `Lumen.colors`. KDE color lookups fall back to
+  the default `#232629` (near-black) text for any section missing a normal
+  foreground — which is why text stayed black across the earlier alpha
+  rounds: the white passes only recolored keys that *already existed* and
+  never added the missing ones, so the fallback dark text kept winning.
+- **Fixed** in `files/scripts/lumen-theme.sh`: the white pass now inserts
+  `ForegroundNormal=#ffffff` into any color group that lacks it (tracked
+  per section while rebuilding the file). A per-section assert now fails
+  the build if any `[Colors:*]` section is missing `ForegroundNormal`, so
+  this cannot silently regress.
+- **Caches invalidated**: LAF + Lumen Plasma Style bumped to `0.7.6` and
+  the fallback `default` desktop theme to `-lumen8`, so Plasma rebuilds its
+  `plasma_theme_*.kcache` palettes instead of serving the old dark one.
+- **Verified live**: all sections carry a white `ForegroundNormal` in
+  `Lumen.colors`, the `BreezeLight`/`BreezeDark` regenerations, and both
+  desktoptheme copies; Qt palette Text role `#232629` → `#ffffff`; VM
+  rebooted onto the fixed image and confirmed light text in apps, panels,
+  window decorations and the PLM greeter (which also shows the blurred
+  nebula).
+
+### ⚠ NVIDIA variants not tested
+
+`lumenora-nvidia` and `lumenora-nvidia-open` compile and push cleanly but
+have **not** been booted or validated on NVIDIA hardware. Treat them as
+experimental until verified.
 
 White-text lockdown, at last done right. The previous round's "force pure
 white" pass was a silent no-op — its regex matched only the `[Colors:...]`

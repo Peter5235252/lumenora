@@ -35,12 +35,12 @@ experimental until verified.
 
 ### Roadmap
 
-Targeting a **stable release (exiting beta)** in **late August or
-September 2026, if everything goes well** — i.e. NVIDIA variant validation,
-broader hardware testing and a clean feedback loop. This is a **solo
-project**: progress depends on time and can stall or burn out. Releases may
-lag behind GitHub activity for that reason; treat them as the source of
-truth for what is actually shippable.
+A **stable release (exiting beta)** could land **anytime between August and
+even November** — whenever validation is done and enough time is available.
+This is a **solo project** currently on summer break, and work returns in
+September, so progress depends heavily on personal time and can easily stall
+or burn out. Releases may lag GitHub activity; treating releases as the
+source of truth for what is actually shippable.
 
 White-text lockdown, at last done right. The previous round's "force pure
 white" pass was a silent no-op — its regex matched only the `[Colors:...]`

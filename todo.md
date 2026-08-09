@@ -1,13 +1,28 @@
-Status: v0.7.5-alpha current — Lumen-only theme + white-text lockdown shipped; dark text still reported in places. NEXT: find which Plasma surface still renders dark text (visual check at greeter/login, not just headless config).
+Status: v0.7.5-alpha current — Lumen-only theme + white-text lockdown shipped; dark text root cause FOUND (LAF metadata Id mismatch) and fixed in caccd50; pending visual confirmation of the new VM build.
+TODO next session: open /tmp/opencode/lumen-fixed.png (and/or boot the VM to
+tty1/lock screen) to visually confirm the fixed session; then close out this
+alpha.
 
 Status: v0.7.4-alpha current — PLM greeter wallpaper fixed + kernel pin bumped; approaching beta.
 
 ## Phase 8 - Lumen-only theme + white-text fix (unreleased)
-- [ ] **DARK TEXT STILL REPORTED**: config layer is pinned (Lumen + white FGs,
-      survives reboot) but the user still sees dark text in some Plasma
-      surfaces. Headless VM check passed; a visual check at greeter/login is
-      outstanding. Candidate: KColorScheme/Plasma theme lookups that don't
-      read the .colors Foreground entries, or a cached/overridden palette.
+- [ ] **VISUAL CONFIRMATION PENDING**: caccd50 rebuilt with the real fix;
+      VM rebased, session running Lumen, screenshot saved at
+      /tmp/opencode/lumen-fixed.png. Check the greeter AND the logged-in
+      desktop for black text / dark backgrounds.
+- [x] ROOT CAUSE FOUND (KDE docs): "The Id entry should match the name of
+      the theme folder name." Our look-and-feel folder is
+      org.lumenora.lumen.desktop but metadata.json declared Id
+      "org.lumenora.lumen" -> KPackage cannot load the global theme, Plasma
+      falls back to stock light Breeze (black text) and even rewrote user
+      config to LookAndFeelPackage=org.kde.breezedark.desktop (deleted).
+- [x] FIXED: LAF metadata Id -> org.lumenora.lumen.desktop (matches folder),
+      Version bumped on LAF + Lumen desktoptheme so Plasma drops its mashed
+      caches (KDE: "update Version so Plasma refreshes its cache").
+- [x] "default" desktoptheme shipped with NO colors file -> any widget
+      missing an SVG in the thin Lumen theme falls back to it with the stock
+      LIGHT palette (dark text). FIXED: default/colors = copy of the
+      white-forced Lumen.colors + version bump.
 - [x] Remove Welcome Center (plasma-welcome + plasma-welcome-fedora) from all
       three recipes
 - [x] Force every Foreground* to pure white in Lumen.colors BEFORE any derived

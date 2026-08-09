@@ -3,55 +3,61 @@
 ## v0.7.5-alpha - 2026-08-09
 
 Theme lockdown round: Welcome Center removed, Lumen is now the *only*
-selectable Plasma look, and white text is forced at the source. **Still open:
-dark text on dark surfaces in some Plasma components — see "Known rough
-edges" below.**
+selectable Plasma look, and white text is forced at multiple layers.
+**Text color and PLM background root cause identified and fixed in the
+image; visual confirmation on a full desktop session is the last step
+before this is called done.**
 
+- **Root cause of the black text — LAF metadata `<Id>` mismatch.** KDE
+  requires "the `Id` entry should match the name of the theme folder name"
+  (see develop.kde.org, *Understanding Plasma Styles*). The folder is
+  `org.lumenora.lumen.desktop` but `metadata.json` declared
+  `"Id": "org.lumenora.lumen"`. A look-and-feel package whose Id does not
+  match its folder is not loadable: Plasma silently drops the global theme,
+  falls back to the stock light Breeze look (dark text over the dark
+  wallpaper), and then even re-writes the user's `kdeglobals` to a *deleted*
+  theme name (`org.kde.breezedark.desktop`) at the next login. Fixed: the
+  Id now equals the folder name, and both the LAF and the Lumen desktop
+  theme got a `Version` bump so Plasma invalidates its cached theme
+  rendering (per KDE docs, "...update the Version so Plasma can properly
+  refresh its cache").
+- **Second culprit — the fallback "default" desktop theme had no `colors`
+  file.** KDE docs: "if a theme is missing an SVG file, it will fall back to
+  the default Breeze theme." Our deliberately thin Lumen desktop theme only
+  ships colors/metadata/plasmarc, so widgets with a missing SVG render from
+  the stock `desktoptheme/default` — which had *no* `colors` file at all,
+  i.e. the stock light palette with dark text. Fixed: `default/colors` now
+  ships a copy of the white-forced `Lumen.colors` plus a version bump.
 - **Welcome Center removed**: `plasma-welcome` + `plasma-welcome-fedora`
-  dropped from all three recipes (base, nvidia, nvidia-open).
-- **Single-theme lockdown**: every stock global theme and desktop theme
-  (`org.kde.breeze*`, `org.fedoraproject.fedora*`, `breeze-dark`,
-  `breeze-light`) is deleted; Lumen is the only theme left on disk. The
-  `BreezeLight`/`BreezeDark` color scheme *names* are kept but rebuilt on
-  the Lumen palette, because the PLM greeter and Breeze consumers reference
-  them by name and would otherwise fall back to a black-text palette.
-- **White text forced at the source**: all `Foreground*` entries in
-  `Lumen.colors` are set to `#ffffff` *before* any derived copy is made
-  (desktoptheme colors file, the BreezeLight/BreezeDark regenerations), so
-  white text is baked into every lookup path.
-- **Existing accounts get pinned to Lumen**: the first-boot
-  `lumenora-fish-default` unit now also writes `ColorScheme=Lumen`,
-  `LookAndFeelPackage=org.lumenora.lumen.desktop` and
-  `AutomaticLookAndFeel=false` into every human account's `kdeglobals`.
-  Without `AutomaticLookAndFeel=false`, Plasma re-resolves the look at every
-  login against the system default — which, with the stock looks deleted,
-  fell back to the embedded light Breeze and re-applied dark text.
-- **Script fixes along the way**: `for pw in $(getent passwd)` word-split on
-  GECOS names with spaces (e.g. "Cseman Péter") so the home path and uid
-  never landed in the same token and the pinning was silently skipped — now
-  a line-by-line `while read` loop. Replaced the nonexistent
-  `kwriteconfig6 --unset` with the supported `--delete`.
-- **Verified in the VM**: after a full rebase + reboot, the live Plasma
-  session leaves `ColorScheme=Lumen`, `AutomaticLookAndFeel=false`, LAF=Lumen
-  intact; only `Lumen.colors` / `BreezeLight.colors` / `BreezeDark.colors`
-  remain, all foregrounds `#ffffff`/`#e9e7f5`. CI builds for all three
-  images are green.
+  dropped from all three recipes.
+- **White text forced at the source**: all `Foreground*` in `Lumen.colors`
+  set to `#ffffff` *before* any derived copy (desktoptheme colors, the
+  BreezeLight/BreezeDark regenerations).
+- **Single-theme lockdown**: all stock global themes and desktop themes
+  deleted; `BreezeLight`/`BreezeDark` color scheme *names* rebuilt on the
+  Lumen palette (PLM greeter and Breeze consumers reference them by name).
+- **Existing accounts pinned to Lumen**: the first-boot `lumenora-fish-default`
+  unit writes `ColorScheme=Lumen` and `LookAndFeelPackage=org.lumenora.lumen.desktop`
+  into every human account's `kdeglobals`, so Plasma cannot resolve to a
+  different look at login.
+- **Auto look-and-feel disabled**: `AutomaticLookAndFeel=false` system-wide
+  (skel, `/etc/xdg/kdeglobals`) and per account — previously Plasma
+  re-resolved every login against the deleted system default and restored a
+  stock light look.
 
 ### Known rough edges (v0.7.5-alpha)
 
-- **Dark text is still visible in places.** The config layer now insists on
-  Lumen + white foregrounds and survives reboots, but the user still reports
-  dark text over the dark UI. The palette entries in the `.colors` files may
-  not be the values some Plasma components actually read (e.g. via
-  `KColorScheme`/Plasma theme lookups that cache or override `Foreground`
-  differently), and the live-session verification above was done headless —
-  the greeter/login session was not visually inspected after the last change.
-  This is the #1 open item for the next round.
-- **Theme lockdown is aggressive by design**: with only Lumen present,
-  any app that requests a missing stock theme name gets Lumen instead of a
-  graceful fallback; behavior is untested beyond the VM.
-- First-boot pinning only runs for accounts created before the theme
-  change; brand-new homes pick Lumen up from the skel profile instead.
+- **Visual proof still pending.** The VM was rebuilt and rebased with the
+  Id fix; the session now keeps the Lumen LAF across reboots. A screenshot
+  was captured but not yet visually inspected on a real display (greeter +
+  login desktop). This is the single remaining check before calling the
+  dark-text bug closed.
+- **Theme lockdown is aggressive by design**: with only Lumen present, apps
+  requesting a missing stock theme name get the Lumen palette (white text on
+  the deep-space scheme) instead of a graceful fallback.
+- First-boot pinning touches accounts that predate the theme change;
+  `desktoptheme/default/colors` and version bumps now cover the fallback
+  paths for any account.
 
 ## v0.7.4-alpha - 2026-08-09
 

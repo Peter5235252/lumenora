@@ -1,8 +1,13 @@
-Status: v0.7.5-alpha current — Welcome Center gone, Lumen forced white-text + single-theme; approaching beta.
+Status: v0.7.5-alpha current — Lumen-only theme + white-text lockdown shipped; dark text still reported in places. NEXT: find which Plasma surface still renders dark text (visual check at greeter/login, not just headless config).
 
 Status: v0.7.4-alpha current — PLM greeter wallpaper fixed + kernel pin bumped; approaching beta.
 
 ## Phase 8 - Lumen-only theme + white-text fix (unreleased)
+- [ ] **DARK TEXT STILL REPORTED**: config layer is pinned (Lumen + white FGs,
+      survives reboot) but the user still sees dark text in some Plasma
+      surfaces. Headless VM check passed; a visual check at greeter/login is
+      outstanding. Candidate: KColorScheme/Plasma theme lookups that don't
+      read the .colors Foreground entries, or a cached/overridden palette.
 - [x] Remove Welcome Center (plasma-welcome + plasma-welcome-fedora) from all
       three recipes
 - [x] Force every Foreground* to pure white in Lumen.colors BEFORE any derived

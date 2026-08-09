@@ -201,7 +201,14 @@ production deployments.
 
 ## Releases
 
-- `v0.7.4-alpha` — current. PLM greeter shows the Lumen wallpaper (Fedora's
+- `v0.7.5-alpha` — current. Welcome Center removed, Lumen is the only
+  selectable Plasma theme, white text forced at the source (`#ffffff` on all
+  `Foreground*` in `Lumen.colors` before derived copies), existing accounts
+  pinned to Lumen at first boot (`AutomaticLookAndFeel=false` to stop Plasma
+  re-resolving to the deleted stock look). **Known rough edge: dark text is
+  still reported in some Plasma surfaces; fix verified headless in the VM,
+  not yet confirmed visually at the greeter/login.**
+- `v0.7.4-alpha` — PLM greeter shows the Lumen wallpaper (Fedora's
   `defaults.conf` overridden in-image after the black-screen regression),
   OGC kernel pin bumped to `7.1.7-ogc1.1-fc44` to match the akmods buildroot.
 - `v0.7.3-alpha` — debloat round: Discover + extra apps removed, Konsole/

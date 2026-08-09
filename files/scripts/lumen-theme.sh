@@ -166,8 +166,9 @@ p = "/usr/share/plasma/look-and-feel/org.lumenora.lumen.desktop/metadata.json"
 with open(p) as f:
     j = json.load(f)
 k = j.setdefault("KPlugin", {})
-k["Id"] = "org.lumenora.lumen"
+k["Id"] = "org.lumenora.lumen.desktop"
 k["Name"] = "Lumen"
+k["Version"] = "0.7.5"
 k["Comment"] = "Lumenora default: deep space blue/purple hybrid"
 for key in [x for x in k if x.startswith("Name[")]:
     del k[key]
@@ -215,6 +216,7 @@ with open(p) as f:
 k = j.setdefault("KPlugin", {})
 k["Id"] = "Lumen"
 k["Name"] = "Lumen"
+k["Version"] = "0.7.5"
 k["Comment"] = "Lumenora Plasma Style (deep space blue/purple)"
 for key in [x for x in k if x.startswith("Name[")]:
     del k[key]
@@ -235,6 +237,22 @@ EOF
 
 rm -f "${DT}/Lumen/colors"
 cp "${CS}/Lumen.colors" "${DT}/Lumen/colors"
+# The stock "default" desktop theme has NO colors file: any widget whose SVG
+# is missing from Lumen falls back to it, and without a colors file Plasma
+# bakes the stock LIGHT palette (black text). Never let that happen: write
+# the white Lumen palette into "default" and bump its version so Plasma's
+# theme cache cannot keep the old one.
+cp "${CS}/Lumen.colors" "${DT}/default/colors"
+python3 - <<'PY'
+import json
+p = "/usr/share/plasma/desktoptheme/default/metadata.json"
+with open(p) as f:
+    j = json.load(f)
+k = j.setdefault("KPlugin", {})
+k["Version"] = k.get("Version", "1.0") + "-lumen7"
+with open(p, "w") as f:
+    json.dump(j, f, indent=1)
+PY
 
 # --- 4. System-wide defaults (honored when a home is created) -----------
 write_lumen_kdeglobals() {

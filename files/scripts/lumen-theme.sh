@@ -239,20 +239,23 @@ cp "${CS}/Lumen.colors" "${DT}/Lumen/colors"
 # --- 4. System-wide defaults (honored when a home is created) -----------
 write_lumen_kdeglobals() {
   local f="$1"
-  if [[ -f "$f" ]] && ! grep -q "ColorScheme=Lumen" "$f"; then
-    cat >> "$f" <<'EOF'
+  if [[ -f "$f" ]] && grep -q "ColorScheme=Lumen" "$f"; then
+    return
+  fi
+  cat >> "$f" <<'EOF'
 
 [General]
 ColorScheme=Lumen
 
 [KDE]
+AutomaticLookAndFeel=false
 LookAndFeelPackage=org.lumenora.lumen.desktop
 AnimationDurationFactor=0.5
 EOF
-  fi
 }
 write_lumen_kdeglobals "${PROFILE}/share/config/kdeglobals"
 write_lumen_kdeglobals "${PROFILE}/xdg/kdeglobals"
+write_lumen_kdeglobals "/etc/xdg/kdeglobals"
 
 # --- 5. Make only Lumen selectable: drop the stock themes --------------
 rm -rf "${LAF}/org.kde.breeze.desktop"

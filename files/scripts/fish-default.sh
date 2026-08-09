@@ -67,8 +67,14 @@ while IFS= read -r pw; do
         home=$(awk -F: '{print $6}' <<<"$pw")
         if [ -d "$home" ] && command -v kwriteconfig6 >/dev/null 2>&1; then
             export HOME="$home" XDG_CONFIG_HOME="$home/.config"
-            kwriteconfig6 --file kdeglobals --group General --key ColorScheme "Lumen" || true
+            # AutomaticLookAndFeel must be OFF: with it true, Plasma re-
+            # resolves to the system-wide default LAF at every login and,
+            # since the stock org.kde.breeze.* looks are deleted, it falls
+            # back to the embedded light Breeze and writes black text.
+            kwriteconfig6 --file kdeglobals --group KDE --key AutomaticLookAndFeel "false" || true
+            # Now pin our Lumen look explicitly.
             kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage "org.lumenora.lumen.desktop" || true
+            kwriteconfig6 --file kdeglobals --group General --key ColorScheme "Lumen" || true
             kwriteconfig6 --file kdeglobals --group General --delete --key ColorSchemeHash || true
         fi
     fi

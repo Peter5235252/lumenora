@@ -163,8 +163,8 @@ PY
 
 # --- 1c. HARD ASSERT: no dark foreground may survive anywhere -------------
 # whitelist: pure white + the lightened accents only
-WHITE_FGS="$(grep -iE '^Foreground(Normal|Alternate|Inactive|Link|Visited|Positive|Negative|Neutral|Active)=' "${CS}/Lumen.colors")"
-BAD="$(printf '%s\n' "$WHITE_FGS" | grep -viE '=(#ffffff|#a3c4ff|#c9a8ff|#d9d5ea)$')"
+WHITE_FGS="$(grep -iE '^Foreground(Normal|Alternate|Inactive|Link|Visited|Positive|Negative|Neutral|Active)=' "${CS}/Lumen.colors" || true)"
+BAD="$(printf '%s\n' "$WHITE_FGS" | grep -viE '=(#ffffff|#a3c4ff|#c9a8ff|#d9d5ea)$' || true)"
 if [[ -n "$BAD" ]]; then
   echo "FATAL: non-whitelisted foregrounds left in Lumen.colors" >&2
   printf '%s\n' "$BAD"

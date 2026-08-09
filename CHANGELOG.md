@@ -1,5 +1,54 @@
 # Changelog
 
+## v0.7.5-alpha (rev 2) - 2026-08-09
+
+White-text lockdown, at last done right. The previous round's "force pure
+white" pass was a silent no-op — its regex matched only the `[Colors:...]`
+header lines, so every `Foreground*` key kept its original (dark-ish) value
+and every derived copy shipped the same. Rev 2 replaces that pass with a
+line-by-line rebuild plus a hard whitelist assert, so the build now *fails*
+if any non-white foreground survives. In the same round: a blurred nebula
+for the PLM greeter and the Anaconda installer, and a fully white-text
+Anaconda GTK stylesheet.
+
+- **Why text was still dark after the Id fix**: the heredoc in
+  `files/scripts/lumen-theme.sh` ran
+  `re.sub(r"(?ms)^\[Colors:Window\].*?(?=^\[|$)", ...)` — with `(?s)` not
+  set, `.` never crosses the newline, and with the multiline `$`, the match
+  stops right after `[Colors:Window]`. The inner `Foreground...=#ffffff`
+  rewrite therefore never executed, on any section. Reproduced standalone:
+  the pass changed nothing.
+- **Fixed**: `Lumen.colors` is now rebuilt line-by-line — every
+  `Foreground*` key becomes `#ffffff`, except the blue/purple accents
+  (Link/Visited/Active and Inactive) which keep their hue but are lightened
+  for contrast on the deep-space scheme (`#a3c4ff`, `#c9a8ff`, `#d9d5ea`).
+- **Hard assert**: a whitelist check runs right after the rebuild — only
+  `#ffffff` and the three lightened accents are allowed; `ForegroundNormal`
+  must be pure white; any other value aborts the build (exit 1). The
+  desktoptheme `Lumen`/`default` colors and BreezeLight/BreezeDark names are
+  copies of this verified file, so all surfaces inherit it.
+- **PLM greeter shows the blurred nebula**: `nebula-blurred.jpg`
+  (Gaussian blur, radius 90, ~80% brightness) shipped inside the Lumen
+  wallpaper package; both `/etc/plasmalogin.conf.d/lumen.conf` and
+  `/usr/lib/plasmalogin/defaults.conf` now point Image/PreviewImage at it.
+- **Anaconda installer surfaces match**: `installer-background.png`
+  (blur radius 120, 55% brightness for a readable scrim) is the full-window
+  `background-image` of `AnacondaSpokeWindow` with `background-size: cover`;
+  the stylesheet forces `color: #ffffff` on every widget scope (labels,
+  buttons, entries, combos, checks, radios, treeviews, textviews, scales,
+  switches, spinners), lightens links/emphasized text to `#cfc9e8`, and
+  dims disabled text to `#cfc9e8`. Buttons keep the Lumen purple accent.
+
+### Known rough edges (v0.7.5-alpha rev 2)
+
+- Visual confirmation is still the single open check: the rebuilt VM must be
+  eyeballed at the greeter and the logged-in desktop (black text would have
+  failed the whitelist, but color fidelity is a visual thing).
+- The Anaconda GTK CSS targets `AnacondaSpokeWindow` scopes; text inside
+  stock GTK dialogs that escape that scope keeps the generic dark GTK theme
+  unless overridden by `@define-color`/widget matches still to be added on a
+  per-dialog basis.
+
 ## v0.7.5-alpha - 2026-08-09
 
 Theme lockdown round: Welcome Center removed, Lumen is now the *only*

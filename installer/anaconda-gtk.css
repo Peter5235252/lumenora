@@ -1,15 +1,26 @@
-/* Lumenora Anaconda branding — deep space blue/purple hybrid */
+/* Lumenora Anaconda branding — deep space blue/purple hybrid, blurred
+   Tarantula Nebula backdrop, pure white text, lightened accents. */
 /* Loaded from /usr/share/anaconda/anaconda-gtk.css in the installer env. */
 
 /* theme colors/images */
 @define-color lumen_bg_color #1c1736;
 @define-color lumen_accent #6a5cff;
 @define-color lumen_accent_light #b388ff;
+@define-color lumen_accent_visible #cfc9e8;
 @define-color lumen_topbar #2a2157;
-@define-color lumen_text #e9e7f5;
-@define-color lumen_accent_light #b388ff;
+@define-color lumen_text #ffffff;
 
-/* logo and sidebar classes */
+/* --- full-window blurred nebula backdrop ------------------------------ */
+AnacondaSpokeWindow {
+    background-color: @lumen_bg_color;
+    background-image: url('/usr/share/anaconda/pixmaps/installer-background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: @lumen_text;
+}
+
+/* logo and sidebar classes (semi-solid so the logo row stays legible) */
 .logo-sidebar {
     background-image: url('/usr/share/anaconda/pixmaps/sidebar-bg.png');
     background-color: @lumen_bg_color;
@@ -37,13 +48,35 @@ AnacondaSpokeWindow #nav-box {
     color: @lumen_text;
 }
 
-/* Keep hub-and-spoke body text readable on dark */
-AnacondaSpokeWindow {
-    background-color: @lumen_bg_color;
+/* --- pure white text for every widget scope --------------------------- */
+AnacondaSpokeWindow label,
+AnacondaSpokeWindow button,
+AnacondaSpokeWindow entry,
+AnacondaSpokeWindow combo,
+AnacondaSpokeWindow check,
+AnacondaSpokeWindow radio,
+AnacondaSpokeWindow treeview,
+AnacondaSpokeWindow textview,
+AnacondaSpokeWindow scale,
+AnacondaSpokeWindow switch,
+AnacondaSpokeWindow spinner {
+    color: @lumen_text;
+    caret-color: @lumen_text;
+}
+
+AnacondaSpokeWindow label:disabled,
+AnacondaSpokeWindow button:disabled {
+    color: #cfc9e8;
+}
+
+AnacondaSpokeWindow entry,
+AnacondaSpokeWindow combo {
+    background-color: rgba(20, 16, 42, 0.85);
     color: @lumen_text;
 }
 
-/* Accent highlights (primary buttons, selected entries) */
+/* Accent highlights (primary buttons, selected entries) — lighter so they
+   stay clearly visible on the deep-space scheme */
 AnacondaSpokeWindow button:checked,
 AnacondaSpokeWindow .destructive-action,
 AnacondaSpokeWindow treeview:selected {
@@ -51,8 +84,15 @@ AnacondaSpokeWindow treeview:selected {
     color: #ffffff;
 }
 
-/* Slightly lighter labels for emphasis */
-.label-big,
-.title-label {
-    color: @lumen_accent_light;
+AnacondaSpokeWindow button:hover {
+    background-color: #4a3bb5;
+    color: #ffffff;
+}
+
+/* Links and emphasized labels — lightened accent for visibility */
+AnacondaSpokeWindow .label-big,
+AnacondaSpokeWindow .title-label,
+AnacondaSpokeWindow .link,
+AnacondaSpokeWindow link {
+    color: @lumen_accent_visible;
 }

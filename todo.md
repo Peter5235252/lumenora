@@ -1,7 +1,42 @@
 Status: v0.7.5-alpha current — Lumen-only theme + white-text lockdown shipped; dark text root cause FOUND (LAF metadata Id mismatch) and fixed in caccd50; pending visual confirmation of the new VM build.
+
+Status: v0.7.5-alpha (rev 2) — MORE dark text found: the "force pure-white
+foregrounds" pass in lumen-theme.sh was a NO-OP (regex matched only the
+[Colors:...] header line, never the Foreground keys). Rev 2 rebuilds
+Lumen.colors line-by-line (all Foreground*=#ffffff, Link/Visited/Active
+lightened blue/purple #a3c4ff/#c9a8ff/#c9a8ff) + hard whitelist assert, so
+build FAILS if any dark foreground survives. Also ships a blurred nebula for
+the PLM greeter and Anaconda installer, and forces full white text in the
+Anaconda GTK UI.
 TODO next session: open /tmp/opencode/lumen-fixed.png (and/or boot the VM to
 tty1/lock screen) to visually confirm the fixed session; then close out this
 alpha.
+
+## Phase 9 - White text everywhere + blurred nebula surfaces (unreleased)
+- [x] ROOT CAUSE (rev 2): `lumen-theme.sh` "force white" heredoc regex
+      `(?ms)^\[Colors:Window\].*?(?=^\[|$)` matches only the section header
+      line — inner Foreground rewrite never fires. Verified by reproducing
+      the pass standalone: output unchanged (#e9e7f5 / #a7a1c9 / dark keys
+      survive in Lumen.colors AND in every derived copy).
+- [x] REBUILT the pass: line-by-line rewrite, every `Foreground*` ->
+      `#ffffff`; accents (Link/Visited/Active) keep blue/purple hue but
+      lightened to #a3c4ff/#c9a8ff/#c9a8ff (visible on #14102a).
+- [x] HARD ASSERT: whitelist check after the pass (only #ffffff + the three
+      lightened accents allowed; ForegroundNormal must be pure white) —
+      build exits 1 on any dark foreground, so this can't regress silently.
+- [x] Blurred nebula: `nebula-blurred.jpg` (GaussianBlur r=90, ~80%
+      brightness) added to the Lumen wallpaper package; PLM greeter
+      (/etc/plasmalogin.conf.d + /usr/lib/plasmalogin/defaults.conf) now
+      points Image/PreviewImage at it.
+- [x] Anaconda installer: `installer-background.png` (blur r=120, 55%
+      brightness) as full-window background-image in anaconda-gtk.css with
+      background-size:cover; every widget scope forced `color:#ffffff`
+      (labels, buttons, entries, combos, treeviews, switches, spinners);
+      links/emphasized labels lightened to #cfc9e8; disabled text #cfc9e8.
+- [ ] Rebuild all three images + green CI, rebase VM, verify on-disk every
+      Foreground* in color-schemes/desktoptheme is white/lightened.
+- [ ] Rebuild installer ISO, boot in Boxes, confirm blurred nebula + white
+      text on first screen.
 
 Status: v0.7.4-alpha current — PLM greeter wallpaper fixed + kernel pin bumped; approaching beta.
 

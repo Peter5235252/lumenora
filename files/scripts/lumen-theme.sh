@@ -133,23 +133,46 @@ EOF
 # normalize it (empty look-and-feel bug guard).
 sed -i 's/^BackgroundNormal=Void$/BackgroundNormal=#241b47/' "${CS}/Lumen.colors"
 
-# --- 1b. Force EVERY foreground to pure white before anything is copied ---
-# (the desktoptheme colors file and the BreezeLight/BreezeDark regenerations
-#  below are all derived from this file, so doing the pass here guarantees
-#  white text everywhere: apps, panels, tooltips, PLM greeter.)
+# --- 1b. Force every foreground to pure white, lighten accents -----------
+# HAARD GUARD: do NOT derive foregrounds. Text that is not #ffffff on the
+# deep-space scheme is unreadable (dark text on the nebula surfaces). This
+# pass rebuilds the file line-by-line: every Foreground* key is rewritten
+# to #ffffff, and accent keys (Link/Visited/Active) keep their blue/purple
+# hue but are LIGHTENED so they stay distinguishable on dark planes.
 python3 - <<'PY'
 import re
 p = "/usr/share/color-schemes/Lumen.colors"
-t = open(p).read()
-for sec in ["Complementary", "View", "Window", "Button", "Selection", "Tooltip"]:
-    t = re.sub(
-        rf"(?ms)^\[Colors:{sec}\].*?(?=^\[|$)",
-        lambda m: re.sub(r"(?m)^(Foreground(Normal|Alternate|Inactive|Link|Visited|Positive|Negative|Neutral|Active))=.+",
-                         r"\g<1>=#ffffff", m.group(0)),
-        t, count=1)
-open(p, "w").write(t)
-print("forced pure-white foregrounds in Lumen.colors")
+lines = open(p).read().splitlines()
+fg_re = re.compile(r"^Foreground\w*=")
+# accent keys mapped to slightly lighter blue/purple (visible on #14102a)
+accent = {
+    "ForegroundLink": "#a3c4ff",       # lighter blue  (#82aaff -> up)
+    "ForegroundVisited": "#c9a8ff",    # lighter purple
+    "ForegroundActive": "#c9a8ff",     # lighter purple
+    "ForegroundInactive": "#d9d5ea",
+}
+out = []
+for ln in lines:
+    if fg_re.match(ln):
+        key = ln.split("=", 1)[0]
+        ln = f"{key}={accent.get(key, '#ffffff')}"
+    out.append(ln)
+open(p, "w").write("\n".join(out) + "\n")
+print("REBUILT Lumen.colors: all Foreground*={} or lightened accents".format("#ffffff"))
 PY
+
+# --- 1c. HARD ASSERT: no dark foreground may survive anywhere -------------
+# whitelist: pure white + the lightened accents only
+WHITE_FGS="$(grep -iE '^Foreground(Normal|Alternate|Inactive|Link|Visited|Positive|Negative|Neutral|Active)=' "${CS}/Lumen.colors")"
+BAD="$(printf '%s\n' "$WHITE_FGS" | grep -viE '=(#ffffff|#a3c4ff|#c9a8ff|#d9d5ea)$')"
+if [[ -n "$BAD" ]]; then
+  echo "FATAL: non-whitelisted foregrounds left in Lumen.colors" >&2
+  printf '%s\n' "$BAD"
+  exit 1
+fi
+grep -qE '^ForegroundNormal=#ffffff$' "${CS}/Lumen.colors" \
+  || { echo "FATAL: ForegroundNormal is not pure white" >&2; exit 1; }
+echo "==> assert: Lumen.colors has only white/light foregrounds"
 
 # --- 2. Lumen global theme (look-and-feel) ------------------------------
 rm -rf "${LAF}/org.lumenora.lumen.desktop"

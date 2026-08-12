@@ -1,7 +1,8 @@
 [Unit]
 Description=Lumenora GPU driver detection
 ConditionPathExists=!/var/lib/lumenora/gpu-checked
-After=local-fs.target
+Wants=network-online.target
+After=local-fs.target network-online.target
 Before=systemd-user-sessions.service
 
 [Service]

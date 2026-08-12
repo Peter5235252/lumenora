@@ -222,6 +222,15 @@ Status: v0.7.3-alpha released (debloat round).
 - [x] Generation-aware selection: `lumenora-nvidia` (proprietary, pre-Turing)
       vs `lumenora-nvidia-open` (open kernel, Turing+) via PCI device ID
       threshold 0x1E00
+- [x] Risk review fix: replace the flat `0x1E00` threshold with an exact
+      device-ID allowlist copied from NVIDIA's open-kernel-modules README
+      (Compatible GPUs, v610.57.04); open flavor only via strict lookup,
+      everything else falls back to the proprietary driver
+- [x] Risk review fix: hybrid multi-GPU laptops (NVIDIA + Intel/AMD) no
+      longer auto-switch by default; `lumenora-force-auto-gpu` override,
+      `/var/lib/lumenora/gpu-hybrid-laptop` marker + manual rebase guidance
+- [x] Risk review fix: GHCR anonymous-pull pre-flight before `bootc switch`
+      (all three packages verified Public)
 
 ## Release
 - [x] Push kde-migration, PR into main, merge

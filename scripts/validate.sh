@@ -9,12 +9,38 @@ while IFS= read -r -d '' file; do
     bash -n "$file"
 done < <(find . -type f -name '*.sh' -print0)
 
-echo "Checking GPU generation threshold..."
+echo "Checking GPU open-kernel support allowlist..."
 gpu_script="files/usr/bin/lumenora-gpu-detect.sh"
-grep -q '^turing_id_threshold=1e00$' "$gpu_script"
-threshold="$(awk -F= '/^turing_id_threshold=/{print $2}' "$gpu_script")"
-(( 16#1d00 < 16#$threshold ))
-(( 16#1e00 >= 16#$threshold ))
+grep -q '^open_supported_ids=(' "$gpu_script"
+if grep -q 'turing_id_threshold' "$gpu_script"; then
+    echo "ERROR: flat numeric GPU threshold removed; use open_supported_ids" >&2
+    exit 1
+fi
+if ! grep -q 'is_open_supported()' "$gpu_script"; then
+    echo "ERROR: open-kernel support lookup helper missing" >&2
+    exit 1
+fi
+count=$(sed -n '/^open_supported_ids=(/,/^)$/p' "$gpu_script" \
+    | grep -oE '[0-9A-Fa-f]{4}' | wc -l)
+(( count >= 295 ))
+for id in 1E04 1F0A 2187 2204 2504 2684 2C02 20B0; do
+    if ! grep -qw "$id" "$gpu_script"; then
+        echo "ERROR: expected NVIDIA open-supported device ${id} missing from allowlist" >&2
+        exit 1
+    fi
+done
+if ! grep -q 'non_nvidia_controllers' "$gpu_script"; then
+    echo "ERROR: hybrid multi-GPU detection missing" >&2
+    exit 1
+fi
+if ! grep -q 'lumenora-force-auto-gpu' "$gpu_script"; then
+    echo "ERROR: hybrid override kernel argument missing" >&2
+    exit 1
+fi
+if ! grep -q 'manifests/latest' "$gpu_script"; then
+    echo "ERROR: GHCR anonymous-pull pre-flight check missing" >&2
+    exit 1
+fi
 
 echo "Checking YAML syntax..."
 if command -v ruby >/dev/null 2>&1; then

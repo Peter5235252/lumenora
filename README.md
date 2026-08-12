@@ -130,14 +130,30 @@ standard `dnf`. Instead:
   the system to an NVIDIA variant image using `bootc switch`, then reboots.
   The NVIDIA images are built with the same BlueBuild recipe plus the akmods
   module (prebuilt kmods), avoiding runtime package layering. The variant is
-  chosen by GPU generation:
-  - `ghcr.io/peter5235252/lumenora-nvidia` — driver **proprietary** flavor,
-    for Maxwell, Pascal, Volta, and Turing through Ada GPUs.
+  chosen by an exact PCI device-ID allowlist taken from NVIDIA's own
+  open-kernel-modules "Compatible GPUs" table:
+  - `ghcr.io/peter5235252/lumenora-nvidia` — driver **proprietary** flavor.
+    This is the fallback for every NVIDIA GPU not on the open allowlist
+    (all pre-Turing devices, plus Turing-era parts NVIDIA does not list for
+    the open modules). NVIDIA supports the proprietary driver on all its GPUs.
   - `ghcr.io/peter5235252/lumenora-nvidia-open` — driver **open kernel**
-    flavor for Turing and newer GPUs (which defaults to the open driver).
-  - The detection script uses the PCI device ID (`lspci`) with a Turing
-    threshold of `0x1E00`: IDs at or above that boundary select the open
-    flavor, lower IDs the proprietary flavor.
+    flavor, selected **only** when the NVIDIA device ID is on NVIDIA's
+    supported list for the open modules (Turing and newer). No flat numeric
+    boundary like `0x1E00` is used — a misclassification can either load the
+    wrong driver or, on some Turing mobile/Quadro parts, no working driver.
+- **Hybrid multi-GPU laptops** (NVIDIA + Intel/AMD controller) do **not**
+  auto-switch by default: the initial display pipeline is driven by the iGPU,
+  and a blind hard switch can black-screen the machine. The base image stays
+  active, a `/var/lib/lumenora/gpu-hybrid-laptop` marker records the situation,
+  and the log prints manual rebase instructions (standard PRIME/offload also
+  applies once the NVIDIA variant is selected manually). To force the automatic
+  switch on a hybrid laptop anyway, add the kernel argument
+  `lumenora-force-auto-gpu`.
+- The NVIDIA variant packages in GHCR must be **Public** for the anonymous
+  first-boot pull. The script pre-flights this with an unauthenticated
+  manifest request before `bootc switch` and explains the fix if the package
+  is private. The `lumenora`, `lumenora-nvidia`, and `lumenora-nvidia-open`
+  packages are public.
 - The initial boot is always the base image. A detected NVIDIA GPU requires a
   registry connection, one successful `bootc switch`, and one reboot before
   the matching variant is active. The switch retries transient pull failures
@@ -146,8 +162,8 @@ standard `dnf`. Instead:
   Remove that marker and `/var/lib/lumenora/gpu-checked` before retrying
   manually after fixing the network or selecting another image.
 - Automatic selection is intentionally conservative. It has not been tested
-  on real NVIDIA hardware, eGPUs, hybrid graphics laptops, or every PCI
-  generation. Keep `lumenora-no-auto-gpu` available as a recovery option.
+  on real NVIDIA hardware, eGPUs, or every PCI generation. Keep
+  `lumenora-no-auto-gpu` available as a recovery option.
 - To disable the automatic switch, add the kernel argument
   `lumenora-no-auto-gpu` (e.g. with `bootc`'s kernel arg support or at
   install time). Manual rebase to a specific NVIDIA image:

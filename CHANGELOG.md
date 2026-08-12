@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- **GPU auto-switch hardened.** `files/usr/bin/lumenora-gpu-detect.sh` no
+  longer uses the flat numeric Turing threshold `0x1E00` to pick the NVIDIA
+  variant. It now selects the open-kernel flavor only when the exact PCI
+  device ID is on NVIDIA's own "Compatible GPUs" allowlist (from the
+  open-gpu-kernel-modules README, v610.57.04); every other NVIDIA GPU falls
+  back to the proprietary image. This avoids misclassifying Turing-era
+  mobile/Quadro parts that NVIDIA supports only with the proprietary driver.
+- **Hybrid multi-GPU laptops no longer auto-switch.** If an Intel/AMD
+  controller is present alongside the NVIDIA GPU, the first-boot service
+  stays on the base image (the iGPU drives the initial display pipeline),
+  records `/var/lib/lumenora/gpu-hybrid-laptop`, and prints manual rebase
+  instructions. Add the `lumenora-force-auto-gpu` kernel argument to force
+  the automatic switch regardless.
+- **GHCR anonymous-pull pre-flight.** The script verifies the target NVIDIA
+  package is publicly pullable (unauthenticated manifest request) before
+  `bootc switch`, and explains how to make the package public if it is
+  private. All three packages are public.
 - **OGC kernel pin bumped** `7.1.7-ogc1.1-fc44` -> `7.1.8-ogc1.1-fc44` to
   match the current `ghcr.io/ublue-os/akmods:ogc-44` buildroot. The existing
   kernel/akmods guard detected this upstream mismatch and prevented all three

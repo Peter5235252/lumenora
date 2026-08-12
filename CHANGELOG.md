@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **OGC kernel pin bumped** `7.1.7-ogc1.1-fc44` -> `7.1.8-ogc1.1-fc44` to
+  match the current `ghcr.io/ublue-os/akmods:ogc-44` buildroot. The existing
+  kernel/akmods guard detected this upstream mismatch and prevented all three
+  images from publishing incompatible NVIDIA modules.
+
 ## v0.8.0-beta.1 - 2026-08-09
 
 First beta. The long-running dark-text bug is finally closed at its root

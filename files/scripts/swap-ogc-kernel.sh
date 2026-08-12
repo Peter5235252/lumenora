@@ -9,7 +9,7 @@ set -ouex pipefail
 # To bump the kernel: update OGC_KERNEL_TAG below to the desired
 # `linux-*-ogc*` release, and confirm the matching akmods ogc buildroot
 # exists for the same kver (skopeo inspect ghcr.io/ublue-os/akmods:ogc-44).
-OGC_KERNEL_TAG="7.1.7-ogc1.1-fc44"
+OGC_KERNEL_TAG="7.1.8-ogc1.1-fc44"
 OGC_REGISTRY="ghcr.io/opengamingcollective/kernel-packages-fedora"
 KERNEL_DIR="/tmp/ogc-kernel"
 FEDORA_VERSION="$(rpm -E %fedora)"

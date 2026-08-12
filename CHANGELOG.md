@@ -6,6 +6,13 @@
   match the current `ghcr.io/ublue-os/akmods:ogc-44` buildroot. The existing
   kernel/akmods guard detected this upstream mismatch and prevented all three
   images from publishing incompatible NVIDIA modules.
+- **NVIDIA EULA baked into the license.** `LICENSE` now embeds the verbatim
+  "NVIDIA Driver License Agreement" (section C) for the `lumenora-nvidia` and
+  `lumenora-nvidia-open` image/ISO variants, matching what the driver RPM ships
+  at `/usr/share/licenses/xorg-x11-drv-nvidia/LICENSE`. The CI smoke test now
+  asserts those variants ship the EULA file inside the image, keeping the
+  NVIDIA distribution requirement (Agreement provided to each SOFTWARE
+  recipient) verifiable on every build.
 
 ## v0.8.0-beta.1 - 2026-08-09
 

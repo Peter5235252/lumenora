@@ -77,10 +77,13 @@ jobs:
         include:
           - variant: base
             image: lumenora
+            nvidia: false
           - variant: nvidia
             image: lumenora-nvidia
+            nvidia: true
           - variant: nvidia-open
             image: lumenora-nvidia-open
+            nvidia: true
     steps:
       - name: Install Podman
         run: |
@@ -98,6 +101,7 @@ jobs:
       - name: Check image payload
         env:
           IMAGE_NAME: ghcr.io/peter5235252/${{ matrix.image }}
+          NVIDIA_VARIANT: ${{ matrix.nvidia }}
         run: |
           IMAGE_TAG="${GITHUB_SHA::7}-44"
           IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
@@ -107,4 +111,9 @@ jobs:
             test -f /usr/lib/systemd/system/lumenora-gpu-detect.service
             test -f /usr/share/wallpapers/Lumen/metadata.json
             test -d /usr/lib/modules
+            if [ "${NVIDIA_VARIANT}" = "true" ]; then
+              echo "Verifying NVIDIA EULA is shipped (NVIDIA Driver License Agreement)"
+              test -f /usr/share/licenses/xorg-x11-drv-nvidia/LICENSE
+              grep -q "NVIDIA Driver License Agreement" /usr/share/licenses/xorg-x11-drv-nvidia/LICENSE
+            fi
           '

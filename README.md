@@ -342,6 +342,11 @@ of important files and retain the installer ISO for recovery.
 - `files/etc/skel` contains the default user configuration (KDE, shells,
   MangoHud, GameMode).
 - `files/scripts/rebrand.sh` applies Lumenora branding and fixes permissions.
+- `LICENSE` covers the listed custom shell scripts under MIT and records
+  third-party licensing. Section (C) embeds the verbatim "NVIDIA Driver License Agreement"
+  that applies to the `lumenora-nvidia` and `lumenora-nvidia-open` image and ISO
+  variants; the authoritative copy for a given driver version ships inside those
+  images at `/usr/share/licenses/xorg-x11-drv-nvidia/LICENSE`.
 - `CHANGELOG.md` tracks releases.
 - `todo.md` tracks the migration plan.
 
@@ -351,3 +356,12 @@ Lumenora includes configuration and software derived from Fedora Atomic
 Desktops, BlueBuild, Universal Blue (akmods), and the Fedora Image Builder
 tooling. Check their repositories for applicable licenses and attribution
 terms before redistributing modified images.
+
+The `lumenora-nvidia` and `lumenora-nvidia-open` variants include the
+proprietary NVIDIA driver stack, which is governed by the NVIDIA Driver License
+Agreement (NVIDIA EULA), **not** by Lumenora's MIT license. The MIT license in
+`LICENSE` covers only the listed custom shell scripts (including scripts that
+drive the NVIDIA drivers); it does not cover the NVIDIA drivers themselves or
+the other repository material. Before installing or redistributing an NVIDIA
+variant, review the EULA embedded in `LICENSE` (section C) and shipped on each
+NVIDIA image at `/usr/share/licenses/xorg-x11-drv-nvidia/LICENSE`.

@@ -6,6 +6,34 @@ decorations, PLM greeter with blurred nebula). NVIDIA variants (lumenora-nvidia
 / lumenora-nvidia-open) compile but are UNTESTED — flagged in README, CHANGELOG
  and release notes; next priority is validating them on NVIDIA hardware.
 
+## Phase 11 - Beta release polish (in progress)
+- [x] Document amd64-only support, tested hardware, untested NVIDIA paths, and
+      daily-driving/recovery cautions.
+- [x] Document pinned image usage, Cosign verification, bootc rollback, and
+      the NVIDIA auto-switch recovery markers.
+- [x] Make `v*` installer workflows attach the generated ISO to the matching
+      GitHub release; keep a workflow artifact as a secondary copy.
+- [x] Add post-build container smoke tests for base and both NVIDIA images.
+- [x] Add `RELEASES.md` with image, signature, ISO, rollback, and hardware gates.
+- [x] Remove stale qt6ct and Oh My Posh backup files; improve installer dialog
+      contrast and controls.
+- [ ] Push the polish changes and confirm all image builds and smoke tests pass.
+- [ ] Build the `v0.8.0-beta.1` installer using the validated immutable payload
+      `ghcr.io/peter5235252/lumenora:ffa598b-44` and confirm the ISO is attached.
+
+## Stable hardware gate
+- [ ] Validate the proprietary NVIDIA image on representative pre-Turing
+      hardware: display, suspend/resume, Vulkan, and one game launch.
+- [ ] Validate the NVIDIA open image on representative Turing-or-newer
+      hardware: display, suspend/resume, Vulkan, and one game launch.
+- [ ] Exercise automatic GPU selection on both generations and verify the
+      `lumenora-no-auto-gpu` recovery path.
+- [ ] Validate the base image on an AMD or Intel discrete-GPU system.
+- [ ] Boot the installer ISO on real hardware and verify GRUB, networking,
+      first boot, and bootc rollback.
+- [ ] Only then promote beta to stable; timing remains validation-driven and
+      may be August-November or later if testing is incomplete.
+
 ## Phase 10 - Beta 1 (released v0.8.0-beta.1)
 - [x] REBASE VM onto the fixed image and confirm light text post-reboot
 - [x] NVIDIA-untested warning added to README + CHANGELOG + release notes

@@ -63,3 +63,48 @@ jobs:
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ secrets.GITHUB_TOKEN }}
           registry_username: ${{ github.actor }}
+
+  smoke:
+    name: Smoke test ${{ matrix.variant }} image
+    needs: [build, build-nvidia, build-nvidia-open]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: base
+            image: lumenora
+          - variant: nvidia
+            image: lumenora-nvidia
+          - variant: nvidia-open
+            image: lumenora-nvidia-open
+    steps:
+      - name: Install Podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Pull image built from this commit
+        env:
+          IMAGE_NAME: ghcr.io/peter5235252/${{ matrix.image }}
+        run: podman pull "${IMAGE_NAME}:${GITHUB_SHA::7}-44"
+
+      - name: Check image payload
+        env:
+          IMAGE_NAME: ghcr.io/peter5235252/${{ matrix.image }}
+        run: |
+          IMAGE_TAG="${GITHUB_SHA::7}-44"
+          IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
+          podman image exists "$IMAGE"
+          podman run --rm --entrypoint /bin/bash "$IMAGE" -ceu '
+            test -x /usr/bin/lumenora-gpu-detect.sh
+            test -f /usr/lib/systemd/system/lumenora-gpu-detect.service
+            test -f /usr/share/wallpapers/Lumen/metadata.json
+            test -d /usr/lib/modules
+          '

@@ -20,6 +20,16 @@ AnacondaSpokeWindow {
     color: @lumen_text;
 }
 
+/* Keep modal installer dialogs readable against the wallpaper instead of
+   inheriting a nearly transparent GTK default. */
+AnacondaSpokeWindow dialog,
+AnacondaSpokeWindow popover,
+AnacondaSpokeWindow .card,
+AnacondaSpokeWindow frame {
+    background-color: rgba(20, 16, 42, 0.94);
+    color: @lumen_text;
+}
+
 /* logo and sidebar classes (semi-solid so the logo row stays legible) */
 .logo-sidebar {
     background-image: url('/usr/share/anaconda/pixmaps/sidebar-bg.png');
@@ -73,6 +83,9 @@ AnacondaSpokeWindow entry,
 AnacondaSpokeWindow combo {
     background-color: rgba(20, 16, 42, 0.85);
     color: @lumen_text;
+    border: 1px solid @lumen_accent_visible;
+    border-radius: 4px;
+    padding: 6px 8px;
 }
 
 /* Accent highlights (primary buttons, selected entries) — lighter so they
@@ -86,6 +99,19 @@ AnacondaSpokeWindow treeview:selected {
 
 AnacondaSpokeWindow button:hover {
     background-color: #4a3bb5;
+    color: #ffffff;
+}
+
+AnacondaSpokeWindow button {
+    border: 1px solid @lumen_accent_light;
+    border-radius: 4px;
+    padding: 7px 14px;
+}
+
+AnacondaSpokeWindow treeview:selected,
+AnacondaSpokeWindow textview text selection,
+AnacondaSpokeWindow entry selection {
+    background-color: @lumen_accent;
     color: #ffffff;
 }
 

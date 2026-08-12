@@ -20,6 +20,23 @@ Lumenora is a gaming-focused desktop image built on Fedora Atomic (bootc)
 with KDE Plasma, built with BlueBuild. It ships a gaming-oriented stack out of
 the box and detects the GPU at first boot to select the right drivers.
 
+## Hardware notes (read before installing)
+
+- **amd64 only.** Images are produced for `x86_64`/`amd64`. There is no ARM
+  build; do not attempt to install on ARM/Apple Silicon hardware.
+- **Where it has been tested.** Development testing is limited to a **VM**
+  and a **laptop that uses integrated graphics**. That means Intel/AMD
+  iGPU driver paths and Virtio/fallback VGA paths are exercised; the
+  NVIDIA driver variants, AMD/Intel **dGPU** setups, and unusual display
+  encoders/panels have seen **no real-hardware validation at all**.
+  Real-hardware experience can differ dramatically from what is described
+  here.
+- **Daily-driving caution:** when installing the beta on a machine you rely
+  on, treat it carefully — install on something you can afford to re-flash,
+  back up what matters, and keep the installer ISO handy so you can recover.
+- See the **GPU driver handling** section for how (and whether) the NVIDIA
+  self-selection applies to your hardware.
+
 ## What it is based on
 
 - Fedora Atomic Desktops KDE Plasma (Kinoite), Fedora 44
@@ -60,7 +77,7 @@ optimized kernel from the [Open Game Collective](https://github.com/opengamingco
 kernel of choice):
 
 - The stock kernel packages are erased and the OGC kernel (currently pinned
-  to `7.1.6-ogc5.1-fc44`) is installed from its OCI distribution, then
+  to `7.1.7-ogc1.1-fc44`) is installed from its OCI distribution, then
   version-locked with `dnf versionlock` so the image does not drift to a
   stock kernel on a later update.
 - To update the kernel, bump the `OGC_KERNEL_TAG` pin in
@@ -121,6 +138,16 @@ standard `dnf`. Instead:
   - The detection script uses the PCI device ID (`lspci`) with a Turing
     threshold of `0x1E00`: IDs at or above that boundary select the open
     flavor, lower IDs the proprietary flavor.
+- The initial boot is always the base image. A detected NVIDIA GPU requires a
+  registry connection, one successful `bootc switch`, and one reboot before
+  the matching variant is active. The switch retries transient pull failures
+  three times; after a permanent failure it records
+  `/var/lib/lumenora/gpu-switch-failed` and stops retrying automatically.
+  Remove that marker and `/var/lib/lumenora/gpu-checked` before retrying
+  manually after fixing the network or selecting another image.
+- Automatic selection is intentionally conservative. It has not been tested
+  on real NVIDIA hardware, eGPUs, hybrid graphics laptops, or every PCI
+  generation. Keep `lumenora-no-auto-gpu` available as a recovery option.
 - To disable the automatic switch, add the kernel argument
   `lumenora-no-auto-gpu` (e.g. with `bootc`'s kernel arg support or at
   install time). Manual rebase to a specific NVIDIA image:
@@ -177,15 +204,22 @@ sudo podman run --rm --privileged \
   bootc-generic-iso
 ```
 
-The resulting ISO is written to `output/`. The installer workflow can also
-be started manually from GitHub Actions with a chosen payload image. It uploads
-the ISO as a workflow artifact.
+The resulting ISO is written to `output/`. The installer workflow can be started
+manually from GitHub Actions with a chosen payload image. It also runs
+automatically for `v*` tags and attaches the resulting ISO to the matching
+GitHub release. The beta workflow default pins the validated payload to
+`ghcr.io/peter5235252/lumenora:ffa598b-44`; use an immutable per-commit tag or
+digest when producing another release. Tagged releases also include a
+`SHA256SUMS` file for the ISO. A manual run can set `release_tag` to attach an
+ISO to an existing release, such as `v0.8.0-beta.1`.
 
 ## GitHub Actions
 
 The normal workflow builds and publishes the Lumenora images (base and both
-NVIDIA variants) on pushes to `main` and weekly. The installer workflow runs
-manually and publishes the ISO as a GitHub Actions artifact.
+NVIDIA variants) on pushes to `main` and weekly, then runs a container smoke
+test against all three per-commit images. The installer workflow runs manually
+or for `v*` tags; tagged builds attach the ISO to the GitHub release and also
+retain it as a workflow artifact.
 
 The repository needs one GitHub Actions secret for image publishing:
 
@@ -259,6 +293,31 @@ sudo bootc switch ghcr.io/peter5235252/lumenora:latest
 
 The NVIDIA variant is selected automatically at first boot when an NVIDIA
 GPU is detected (see GPU driver handling above).
+
+For reproducible testing, replace `latest` with a per-commit image tag, for
+example:
+
+```bash
+sudo bootc switch ghcr.io/peter5235252/lumenora:ffa598b-44
+```
+
+Images are signed with Cosign. Verify a pinned image before switching when the
+public key is available locally:
+
+```bash
+cosign verify --key keys/cosign.pub ghcr.io/peter5235252/lumenora:ffa598b-44
+```
+
+If a deployment does not boot or a hardware change exposes a regression, select
+the previous bootc deployment from the boot menu or run:
+
+```bash
+sudo bootc rollback
+sudo systemctl reboot
+```
+
+The rollback applies to the image deployment, not to user data. Keep backups
+of important files and retain the installer ISO for recovery.
 
 ## Project layout
 

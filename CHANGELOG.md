@@ -33,6 +33,19 @@ cause, and the base image is verified live in a VM.
 have **not** been booted or validated on NVIDIA hardware. Treat them as
 experimental until verified.
 
+### Release and recovery polish
+
+- The first-boot NVIDIA selector now serializes concurrent runs, retries
+  transient registry failures three times, and records a permanent failure so
+  it does not loop forever. Remove `/var/lib/lumenora/gpu-checked` and
+  `/var/lib/lumenora/gpu-switch-failed` to retry after recovery.
+- Installer workflows run for `v*` tags, attach the generated ISO and
+  `SHA256SUMS` to the matching GitHub release, and retain a workflow artifact.
+- The beta payload used by the installer is the validated per-commit image
+  `ghcr.io/peter5235252/lumenora:ffa598b-44`.
+- Added `RELEASES.md` as the release gate for signatures, image smoke tests,
+  installer boot tests, rollback, and real-hardware validation.
+
 ### Roadmap
 
 A **stable release (exiting beta)** could land **anytime between August and

@@ -1,0 +1,45 @@
+name: BlueBuild with retry
+description: Build a BlueBuild image and retry once after transient build failures
+
+inputs:
+  recipe:
+    description: Recipe filename relative to recipes/
+    required: true
+  cosign_private_key:
+    description: Cosign signing secret
+    required: true
+  registry_token:
+    description: Registry authentication token
+    required: true
+  registry_username:
+    description: Registry username
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Build image
+      id: first-attempt
+      continue-on-error: true
+      uses: blue-build/github-action@v1
+      with:
+        recipe: ${{ inputs.recipe }}
+        cosign_private_key: ${{ inputs.cosign_private_key }}
+        registry_token: ${{ inputs.registry_token }}
+        registry_username: ${{ inputs.registry_username }}
+
+    - name: Retry image build
+      id: second-attempt
+      if: steps.first-attempt.outcome == 'failure'
+      continue-on-error: true
+      uses: blue-build/github-action@v1
+      with:
+        recipe: ${{ inputs.recipe }}
+        cosign_private_key: ${{ inputs.cosign_private_key }}
+        registry_token: ${{ inputs.registry_token }}
+        registry_username: ${{ inputs.registry_username }}
+
+    - name: Fail after retry
+      if: steps.first-attempt.outcome == 'failure' && steps.second-attempt.outcome == 'failure'
+      shell: bash
+      run: exit 1

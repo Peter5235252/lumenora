@@ -184,8 +184,11 @@ bluebuild generate recipes/recipe.yml -o Containerfile.generated
 bluebuild build recipes/recipe.yml
 ```
 
-The committed `Containerfile` is retained for direct Podman builds and mirrors
-the package and base-image choices in `recipes/recipe.yml`:
+The committed `Containerfile` is retained for direct Podman builds. It keeps
+the same base image and the same COPR/package choices as the base flavor of
+`recipes/recipe.yml`; the OGC kernel swap, package removals, theming and
+first-boot scripts, the flatpak batch, and the NVIDIA variants are built by
+the BlueBuild recipes only:
 
 ```bash
 podman build -t lumenora:latest -f Containerfile .
@@ -340,7 +343,9 @@ of important files and retain the installer ISO for recovery.
 - `recipes/recipe.yml` is the canonical BlueBuild recipe (KDE base).
 - `recipes/recipe-nvidia.yml` and `recipes/recipe-nvidia-open.yml` add the
   NVIDIA driver variants (proprietary and open kernel flavors).
-- `Containerfile` is the matching direct-build definition.
+- `Containerfile` is a direct-build definition for local testing (base image
+  and package set; kernel swap, removals, theming, flatpaks, and NVIDIA
+  variants are recipe-only).
 - `installer/Containerfile` defines the Anaconda installer environment.
 - `installer/iso.yaml` defines the boot menu and ISO label.
 - `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.

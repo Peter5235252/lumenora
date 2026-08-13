@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
 set -ouex pipefail
 
 # Swap the stock Fedora kernel for the OGC (Open Gaming Collective) gaming

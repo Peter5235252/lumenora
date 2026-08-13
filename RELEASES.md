@@ -14,6 +14,10 @@ itself; the image, installer, signatures, and hardware notes must agree.
 - [ ] Confirm the image smoke tests pass for all three variants.
 - [ ] Verify the three published images with `cosign` and `keys/cosign.pub`.
 - [ ] Confirm the kernel pin and NVIDIA akmods buildroot use the same version.
+- [ ] If the NVIDIA driver pin changed, re-sync the `open_supported_ids`
+      allowlist in `files/usr/bin/lumenora-gpu-detect.sh` from NVIDIA's
+      open-gpu-kernel-modules "Compatible GPUs" table and bump the
+      `( count >= N )` floor in `scripts/validate.sh`.
 
 ## Installer
 

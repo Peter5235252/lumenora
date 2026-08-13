@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
 set -ouex pipefail
 
 # Bring the whole image to the latest packages, most importantly the

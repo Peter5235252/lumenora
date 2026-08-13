@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+- **SPDX headers on all MIT-licensed scripts.** The eight scripts listed in
+  `LICENSE` section (A) now carry `# SPDX-License-Identifier: MIT`, matching
+  the LICENSE's own SPDX guidance. `scripts/validate.sh` asserts the headers
+  stay present.
+- **fish-default notify mismatch fixed.** The embedded first-boot unit is
+  `Type=oneshot`, so its trailing `systemd-notify --ready` was a no-op; the
+  call is dropped.
+- **Stale debug workflow removed.** `.github/workflows/runner-diagnostic.yml`
+  (manual-dispatch runner probe) is gone; `validate.sh` no longer parses it.
+- **Direct-build Containerfile synced and README corrected.** The
+  `Containerfile` installs `eza` and `fish` like the recipe, and the README
+  no longer claims it fully mirrors `recipes/recipe.yml` — the OGC kernel
+  swap, package removals, theming/first-boot scripts, flatpak batch, and
+  NVIDIA variants are BlueBuild-recipe-only.
+- **Allowlist freshness guard documented.** `RELEASES.md` now reminds
+  maintainers to re-sync `open_supported_ids` from NVIDIA's "Compatible
+  GPUs" table and bump the `validate.sh` entry floor (>= 295) whenever the
+  driver pin changes.
+
 - **GPU auto-switch hardened.** `files/usr/bin/lumenora-gpu-detect.sh` no
   longer uses the flat numeric Turing threshold `0x1E00` to pick the NVIDIA
   variant. It now selects the open-kernel flavor only when the exact PCI

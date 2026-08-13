@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
 set -eu
 
 marker="/var/lib/lumenora/gpu-checked"

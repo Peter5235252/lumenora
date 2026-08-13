@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
 
 set -euo pipefail
 
@@ -79,8 +80,6 @@ while IFS= read -r pw; do
         fi
     fi
 done < <(getent passwd)
-
-systemd-notify --ready 2>/dev/null || true
 EOS
 chmod +x "$SCRIPT"
 

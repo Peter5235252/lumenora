@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
 set -euo pipefail
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -8,6 +9,22 @@ echo "Checking shell syntax..."
 while IFS= read -r -d '' file; do
     bash -n "$file"
 done < <(find . -type f -name '*.sh' -print0)
+
+echo "Checking SPDX license headers on MIT-licensed scripts..."
+for script in \
+    files/scripts/dedup-home-subvol.sh \
+    files/scripts/fish-default.sh \
+    files/scripts/lumen-theme.sh \
+    files/scripts/rebrand.sh \
+    files/scripts/swap-ogc-kernel.sh \
+    files/scripts/update-os.sh \
+    files/usr/bin/lumenora-gpu-detect.sh \
+    scripts/validate.sh; do
+    if ! grep -q '^# SPDX-License-Identifier: MIT' "$script"; then
+        echo "ERROR: $script is missing the SPDX-License-Identifier: MIT header" >&2
+        exit 1
+    fi
+done
 
 echo "Checking GPU open-kernel support allowlist..."
 gpu_script="files/usr/bin/lumenora-gpu-detect.sh"
@@ -47,7 +64,6 @@ if command -v ruby >/dev/null 2>&1; then
     ruby -e 'require "yaml"; ARGV.each { |file| YAML.load_file(file); puts file }' \
         .github/workflows/build.yml \
         .github/workflows/installer.yml \
-        .github/workflows/runner-diagnostic.yml \
         .github/workflows/validate.yml \
         recipes/recipe.yml \
         recipes/recipe-nvidia.yml \

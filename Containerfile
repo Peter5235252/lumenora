@@ -6,7 +6,7 @@ RUN dnf copr enable -y kylegospo/bazaar && \
     curl cosign tar fastfetch pciutils bazaar-store distrobox \
     mangohud gamemode gamescope oh-my-posh eza fish && \
     flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
-    dnf clean all
+    dnf clean all && command -v cosign
 
 COPY files/etc /etc
 COPY files/usr /usr

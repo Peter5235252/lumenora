@@ -29,13 +29,14 @@ done
 echo "Checking GPU open-kernel support allowlist..."
 gpu_script="files/usr/bin/lumenora-gpu-detect.sh"
 gpu_common="files/usr/lib/lumenora/gpu-common.sh"
+gpu_common="files/usr/lib/lumenora/gpu-common.sh"
 python3 scripts/generate-recipes.py --check
 grep -q '^open_supported_ids=(' "$gpu_common"
 if grep -q 'turing_id_threshold' "$gpu_script"; then
     echo "ERROR: flat numeric GPU threshold removed; use open_supported_ids" >&2
     exit 1
 fi
-if ! grep -q 'is_open_supported()' "$gpu_script"; then
+if ! grep -q 'is_open_supported()' "$gpu_common"; then
     echo "ERROR: open-kernel support lookup helper missing" >&2
     exit 1
 fi
@@ -43,7 +44,7 @@ count=$(sed -n '/^open_supported_ids=(/,/^)$/p' "$gpu_common" \
     | grep -oE '[0-9A-Fa-f]{4}' | wc -l)
 (( count >= 295 ))
 for id in 1E04 1F0A 2187 2204 2504 2684 2C02 20B0; do
-    if ! grep -qw "$id" "$gpu_script"; then
+    if ! grep -qw "$id" "$gpu_common"; then
         echo "ERROR: expected NVIDIA open-supported device ${id} missing from allowlist" >&2
         exit 1
     fi
@@ -56,8 +57,12 @@ if ! grep -q 'lumenora-force-auto-gpu' "$gpu_script"; then
     echo "ERROR: hybrid override kernel argument missing" >&2
     exit 1
 fi
-if ! grep -q 'manifests/latest' "$gpu_script"; then
-    echo "ERROR: GHCR anonymous-pull pre-flight check missing" >&2
+if ! grep -q 'verify_and_resolve_image' "$gpu_common"; then
+    echo "ERROR: signed digest verification helper missing" >&2
+    exit 1
+fi
+if ! grep -q 'resolved_target' "$gpu_script"; then
+    echo "ERROR: GPU detector does not switch by immutable digest" >&2
     exit 1
 fi
 

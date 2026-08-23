@@ -28,7 +28,9 @@ done
 
 echo "Checking GPU open-kernel support allowlist..."
 gpu_script="files/usr/bin/lumenora-gpu-detect.sh"
-grep -q '^open_supported_ids=(' "$gpu_script"
+gpu_common="files/usr/lib/lumenora/gpu-common.sh"
+python3 scripts/generate-recipes.py --check
+grep -q '^open_supported_ids=(' "$gpu_common"
 if grep -q 'turing_id_threshold' "$gpu_script"; then
     echo "ERROR: flat numeric GPU threshold removed; use open_supported_ids" >&2
     exit 1
@@ -37,7 +39,7 @@ if ! grep -q 'is_open_supported()' "$gpu_script"; then
     echo "ERROR: open-kernel support lookup helper missing" >&2
     exit 1
 fi
-count=$(sed -n '/^open_supported_ids=(/,/^)$/p' "$gpu_script" \
+count=$(sed -n '/^open_supported_ids=(/,/^)$/p' "$gpu_common" \
     | grep -oE '[0-9A-Fa-f]{4}' | wc -l)
 (( count >= 295 ))
 for id in 1E04 1F0A 2187 2204 2504 2684 2C02 20B0; do
@@ -75,6 +77,7 @@ fi
 
 echo "Checking Cosign public-key consistency..."
 cmp -s cosign.pub keys/cosign.pub
+cmp -s cosign.pub files/etc/lumenora/cosign.pub
 openssl pkey -pubin -in cosign.pub -out /dev/null >/dev/null 2>&1
 
 echo "Validation passed."

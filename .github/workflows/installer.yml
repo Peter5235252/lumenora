@@ -110,4 +110,5 @@ jobs:
           files: |
             output/**/*.iso
             output/SHA256SUMS
+            output/LUMENORA-BUILD-METADATA
           fail_on_unmatched_files: true

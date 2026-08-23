@@ -16,6 +16,11 @@ USAGE
 
 action="${1:-status}"
 shift || true
+variant=""
+if [[ "$action" == "verify" ]]; then
+    variant="${1:-}"
+    shift || true
+fi
 dry_run="no"
 reboot="no"
 force="no"
@@ -32,7 +37,6 @@ while (($#)); do
 done
 
 if [[ "$action" == "verify" ]]; then
-    variant="${1:-}"
     [[ -n "$variant" ]] || { echo "verify requires a variant." >&2; exit 2; }
     ref="$(image_ref_for_variant "$variant")"
     resolved="$(verify_and_resolve_image "$ref")"
@@ -54,7 +58,11 @@ case "$action" in
             echo "Forcing automatic detection for this run."
         fi
         rm -f /var/lib/lumenora/gpu-checked /var/lib/lumenora/gpu-switch-failed
-        LUMENORA_FORCE_AUTO_GPU=yes /usr/bin/lumenora-gpu-detect.sh
+        if [[ "$force" == "yes" ]]; then
+            LUMENORA_FORCE_AUTO_GPU=yes /usr/bin/lumenora-gpu-detect.sh
+        else
+            /usr/bin/lumenora-gpu-detect.sh
+        fi
         ;;
     base|proprietary|open)
         ref="$(image_ref_for_variant "$action")"

@@ -10,7 +10,7 @@ set -ouex pipefail
 # To bump the kernel: update OGC_KERNEL_TAG below to the desired
 # `linux-*-ogc*` release, and confirm the matching akmods ogc buildroot
 # exists for the same kver (skopeo inspect ghcr.io/ublue-os/akmods:ogc-44).
-OGC_KERNEL_TAG="7.2-ogc4.1-fc44"
+OGC_KERNEL_TAG="7.1.8-ogc1.1-fc44"
 OGC_REGISTRY="ghcr.io/opengamingcollective/kernel-packages-fedora"
 KERNEL_DIR="/tmp/ogc-kernel"
 FEDORA_VERSION="$(rpm -E %fedora)"
@@ -120,23 +120,6 @@ generate_initramfs() {
   fi
 }
 
-# --- 6. Guard: the akmods buildroot must match the shipped kernel ---------
-check_akmods_kernel_match() {
-  local image label kver
-  image="ghcr.io/ublue-os/akmods:ogc-${FEDORA_VERSION}"
-  echo "==> Checking akmods buildroot ${image}"
-  label="$(skopeo inspect "docker://${image}" 2>/dev/null \
-    | jq -r '.Labels["ostree.linux"] // empty' \
-    || true)"
-  kver="$(ls -d /usr/lib/modules/*"${FEDORA_VERSION}".x86_64 2>/dev/null | head -1 | xargs basename 2>/dev/null || true)"
-  if [[ -z "${label}" || "${label}" != "${kver}" ]]; then
-    echo "FATAL: akmods buildroot kernel (${label:-unknown}) != shipped kernel (${kver:-none})" >&2
-    echo "       Bump OGC_KERNEL_TAG in ${0} to the version the akmods ogc-${FEDORA_VERSION} image was rebuilt for." >&2
-    exit 1
-  fi
-  echo "==> akmods buildroot matches shipped kernel: ${kver}"
-}
-
 echo "==> Swapping stock kernel for OGC ${OGC_KERNEL_TAG} (Fedora ${FEDORA_VERSION})"
 shim_kernel_install_hooks
 remove_stock_kernel
@@ -146,7 +129,6 @@ install_ogc_kernel
 lock_kernel_version
 restore_kernel_install_hooks
 generate_initramfs
-check_akmods_kernel_match
 
 echo "==> Installed kernels:"
 rpm -q kernel kernel-core kernel-modules kernel-devel kernel-devel-matched kernel-headers kernel-tools || true

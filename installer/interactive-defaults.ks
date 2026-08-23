@@ -1,1 +1,1 @@
-bootc --source-imgref registry:ghcr.io/peter5235252/lumenora:latest --target-imgref ghcr.io/peter5235252/lumenora:latest
+bootc --source-imgref registry:__LUMENORA_PAYLOAD_REF__ --target-imgref __LUMENORA_PAYLOAD_REF__

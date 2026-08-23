@@ -51,7 +51,7 @@ jobs:
           test -n "$payload_digest"
           echo "PAYLOAD_REF=$payload_digest" >> "$GITHUB_ENV"
           echo "PAYLOAD_DIGEST=$payload_digest" >> "$GITHUB_ENV"
-          sed -i "s|__LUMENORA_PAYLOAD_REF__|$payload_digest|g" installer/interactive-defaults.ks
+          sed -i "s|ghcr.io/peter5235252/lumenora:latest|$payload_digest|g" installer/interactive-defaults.ks
 
       - name: Record image-builder version
         run: |

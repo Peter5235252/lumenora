@@ -7,8 +7,6 @@ source /usr/lib/lumenora/gpu-common.sh
 marker="/var/lib/lumenora/gpu-checked"
 failed_marker="/var/lib/lumenora/gpu-switch-failed"
 hybrid_marker="/var/lib/lumenora/gpu-hybrid-laptop"
-nvidia_image="ghcr.io/peter5235252/lumenora-nvidia"
-nvidia_open_image="ghcr.io/peter5235252/lumenora-nvidia-open"
 state_dir="/var/lib/lumenora"
 # bootc switch pulls the variant image from the registry; give transient
 # registry failures (e.g. truncated layer downloads) a few retries.
@@ -118,7 +116,7 @@ device_id="$(printf '%s\n' "$device_id" | tr '[:lower:]' '[:upper:]')"
 if is_open_supported "$device_id"; then
     target="$nvidia_open_image"
     echo "Lumenora: NVIDIA device ${device_id} is on NVIDIA's open-kernel-module"
-    echo "Lumenora: supported list; switching to ${target}:latest"
+    echo "Lumenora: supported list; switching to ${target}"
 else
     # Proprietary supports every NVIDIA GPU, so an unknown device, a pre-Turing
     # GPU, or a Turing-era part NVIDIA does not list for the open modules all

@@ -33,8 +33,11 @@ done
 
 if [[ "$action" == "verify" ]]; then
     variant="${1:-}"
-    echo "verify requires a variant." >&2
-    exit 2
+    [[ -n "$variant" ]] || { echo "verify requires a variant." >&2; exit 2; }
+    ref="$(image_ref_for_variant "$variant")"
+    resolved="$(verify_and_resolve_image "$ref")"
+    echo "verified: $resolved"
+    exit 0
 fi
 
 case "$action" in
@@ -48,10 +51,10 @@ case "$action" in
         ;;
     auto)
         if [[ "$force" == "yes" ]]; then
-            grubby --update-kernel=ALL --args="lumenora-force-auto-gpu"
+            echo "Forcing automatic detection for this run."
         fi
         rm -f /var/lib/lumenora/gpu-checked /var/lib/lumenora/gpu-switch-failed
-        systemctl restart lumenora-gpu-detect.service
+        LUMENORA_FORCE_AUTO_GPU=yes /usr/bin/lumenora-gpu-detect.sh
         ;;
     base|proprietary|open)
         ref="$(image_ref_for_variant "$action")"

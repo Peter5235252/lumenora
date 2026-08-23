@@ -13,23 +13,6 @@ state_dir="/var/lib/lumenora"
 attempts=3
 retry_base_sleep=10
 
-# Devices on this list are the ones NVIDIA's own open GPU kernel modules
-# documentation ("open-gpu-kernel-modules" README, Compatible GPUs table,
-# v610.57.04) confirms as supported by the open kernel modules — Turing and
-# newer. Every NVIDIA GPU that NVIDIA does list there keeps its own vendor
-# subsystem caveats; the device ID alone is the discriminator we support here.
-#
-# Any NVIDIA GPU not on this list — including pre-Turing (Maxwell, Pascal,
-# Volta), specific Turing-era mobile/Quadro parts, and unknown-only-by-ID
-# devices — falls back to the proprietary driver image, which NVIDIA supports
-# on all NVIDIA GPUs. This avoids a flat numeric ">= 0x1E00" boundary that
-# misclassifies devices; we opt IN to the open flavor only for device IDs
-# NVIDIA explicitly supports.
-#
-# Source: https://github.com/NVIDIA/open-gpu-kernel-modules/blob/main/README.md
-# (Compatible GPUs table, retrieved 2026-08). Keep this list in sync when a
-# driver release adds support for new device IDs.
-
 # Opt out: lumenora-no-auto-gpu on the kernel command line disables the
 # whole self-selection mechanism (stays on the base image forever).
 if grep -q "lumenora-no-auto-gpu" /proc/cmdline; then
@@ -93,8 +76,8 @@ if [[ -n "$non_nvidia_controllers" && "$force_auto_gpu" != "yes" ]]; then
     echo "Lumenora: hybrid Intel/AMD + NVIDIA graphics detected; not auto-switching" >&2
     echo "Lumenora: staying on the base image (iGPU drives the display). To" >&2
     echo "Lumenora: use the NVIDIA GPU on this laptop, rebase manually, e.g.:" >&2
-    echo "Lumenora:   sudo bootc switch ${nvidia_image}:latest" >&2
-    echo "Lumenora:   sudo bootc switch ${nvidia_open_image}:latest" >&2
+    echo "Lumenora:   sudo lumenora-gpu-switch proprietary --reboot" >&2
+    echo "Lumenora:   sudo lumenora-gpu-switch open --reboot" >&2
     echo "Lumenora: To force the automatic switch anyway, add the kernel arg" >&2
     echo "Lumenora: 'lumenora-force-auto-gpu' and remove:" >&2
     echo "Lumenora:   ${marker} ${hybrid_marker}" >&2
@@ -123,7 +106,7 @@ else
     # land on the proprietary variant.
     target="$nvidia_image"
     echo "Lumenora: NVIDIA device ${device_id} is not on the open-kernel-module"
-    echo "Lumenora: supported list; switching to ${target}:latest (proprietary)"
+    echo "Lumenora: supported list; switching to ${target} (proprietary)"
 fi
 
 # Verify the signed image and resolve its manifest to an immutable digest before switching.

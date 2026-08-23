@@ -9,7 +9,7 @@ on:
       payload_ref:
         description: Lumenora image to install
         required: false
-        default: ghcr.io/peter5235252/lumenora:ffa598b-44
+        default: ''
       release_tag:
         description: Existing GitHub release to attach the ISO to (optional)
         required: false
@@ -33,17 +33,45 @@ jobs:
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Pull Lumenora payload
+      - name: Resolve and pull immutable Lumenora payload
         env:
-          PAYLOAD_REF: ${{ inputs.payload_ref || 'ghcr.io/peter5235252/lumenora:ffa598b-44' }}
-        run: sudo podman pull "$PAYLOAD_REF"
+          INPUT_PAYLOAD_REF: ${{ inputs.payload_ref }}
+        run: |
+          if [ -n "$INPUT_PAYLOAD_REF" ]; then
+            payload_ref="$INPUT_PAYLOAD_REF"
+          else
+            payload_ref="ghcr.io/peter5235252/lumenora:${GITHUB_SHA::7}-44"
+          fi
+          case "$payload_ref" in
+            ghcr.io/peter5235252/lumenora:*|ghcr.io/peter5235252/lumenora@*) ;;
+            *) echo "payload_ref must target the public Lumenora package on GHCR" >&2; exit 1 ;;
+          esac
+          sudo podman pull "$payload_ref"
+          payload_digest="$(sudo podman image inspect --format '{{index .RepoDigests 0}}' "$payload_ref")"
+          test -n "$payload_digest"
+          echo "PAYLOAD_REF=$payload_digest" >> "$GITHUB_ENV"
+          echo "PAYLOAD_DIGEST=$payload_digest" >> "$GITHUB_ENV"
+          sed -i "s|__LUMENORA_PAYLOAD_REF__|$payload_digest|g" installer/interactive-defaults.ks
+
+      - name: Record image-builder version
+        run: |
+          sudo podman pull ghcr.io/osbuild/image-builder-cli:latest
+          builder_digest="$(sudo podman image inspect --format '{{index .RepoDigests 0}}' ghcr.io/osbuild/image-builder-cli:latest)"
+          test -n "$builder_digest"
+          mkdir -p output
+          {
+            echo "payload=$PAYLOAD_REF"
+            echo "payload_digest=$PAYLOAD_DIGEST"
+            echo "image_builder=$builder_digest"
+            echo "source_commit=$GITHUB_SHA"
+          } > output/LUMENORA-BUILD-METADATA
 
       - name: Build installer environment
         run: sudo podman build -f installer/Containerfile -t localhost/lumenora-installer:latest installer
 
       - name: Build graphical installer ISO
         env:
-          PAYLOAD_REF: ${{ inputs.payload_ref || 'ghcr.io/peter5235252/lumenora:ffa598b-44' }}
+          PAYLOAD_REF: ${{ env.PAYLOAD_REF }}
         run: |
           mkdir -p output
           sudo podman run --rm --privileged \
@@ -71,6 +99,7 @@ jobs:
           path: |
             output/**/*.iso
             output/SHA256SUMS
+            output/LUMENORA-BUILD-METADATA
           if-no-files-found: error
 
       - name: Attach installer ISO to release

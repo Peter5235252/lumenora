@@ -45,6 +45,18 @@ the box and detects the GPU at first boot to select the right drivers.
   system management
 - Fedora's Anaconda installer and unified Image Builder
 
+## Release status
+
+The current beta is validation-driven. The base image has VM validation; the
+NVIDIA variants compile and publish but require representative NVIDIA hardware
+testing before stable promotion. Every installer build records the exact
+payload digest, image-builder digest, source commit, and ISO checksum in
+`LUMENORA-BUILD-METADATA` and `SHA256SUMS`.
+
+For a tagged release, use the ISO and metadata together. The metadata tells you
+exactly which immutable image payload the installer embeds; do not substitute
+`:latest` when reproducing a release.
+
 ## Theme ("Lumen")
 
 Lumenora ships a custom deep space blue/purple theme called **Lumen** as the
@@ -149,25 +161,33 @@ standard `dnf`. Instead:
   applies once the NVIDIA variant is selected manually). To force the automatic
   switch on a hybrid laptop anyway, add the kernel argument
   `lumenora-force-auto-gpu`.
-- The NVIDIA variant packages in GHCR must be **Public** for the anonymous
-  first-boot pull. The script pre-flights this with an unauthenticated
-  manifest request before `bootc switch` and explains the fix if the package
-  is private. The `lumenora`, `lumenora-nvidia`, and `lumenora-nvidia-open`
-  packages are public.
+- The NVIDIA variant packages in GHCR must be **Public** for the first-boot
+  manifest lookup. Before switching, the script verifies the image with the
+  bundled `/etc/lumenora/cosign.pub` key, resolves the registry manifest to a
+  digest, verifies that digest, and passes the immutable reference to
+  `bootc switch`. The `lumenora`, `lumenora-nvidia`, and
+  `lumenora-nvidia-open` packages must remain public.
 - The initial boot is always the base image. A detected NVIDIA GPU requires a
   registry connection, one successful `bootc switch`, and one reboot before
   the matching variant is active. The switch retries transient pull failures
   three times; after a permanent failure it records
   `/var/lib/lumenora/gpu-switch-failed` and stops retrying automatically.
   Remove that marker and `/var/lib/lumenora/gpu-checked` before retrying
-  manually after fixing the network or selecting another image.
+  manually after fixing the network or selecting another image. The
+  `lumenora-gpu-switch` command makes this explicit:
+  `sudo lumenora-gpu-switch verify open`,
+  `sudo lumenora-gpu-switch open --dry-run`, or
+  `sudo lumenora-gpu-switch proprietary --reboot`.
+  Use `sudo lumenora-gpu-switch status` to inspect the active deployment and
+  detection markers.
 - Automatic selection is intentionally conservative. It has not been tested
   on real NVIDIA hardware, eGPUs, or every PCI generation. Keep
   `lumenora-no-auto-gpu` available as a recovery option.
 - To disable the automatic switch, add the kernel argument
   `lumenora-no-auto-gpu` (e.g. with `bootc`'s kernel arg support or at
   install time). Manual rebase to a specific NVIDIA image:
-  `sudo bootc switch ghcr.io/peter5235252/lumenora-nvidia:latest`.
+  `sudo lumenora-gpu-switch proprietary --reboot` (or `open`); the command
+  verifies the signed image and switches by immutable digest.
 
 ## User setup and security
 
@@ -350,7 +370,13 @@ of important files and retain the installer ISO for recovery.
 - `installer/iso.yaml` defines the boot menu and ISO label.
 - `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.
 - `.github/workflows/build.yml` builds and signs all three images.
-- `.github/workflows/installer.yml` builds and uploads the graphical ISO.
+- `.github/workflows/installer.yml` builds and uploads the graphical ISO,
+  embedding an exact payload digest and publishing `LUMENORA-BUILD-METADATA`.
+- `recipes/recipe-template.yml` and `scripts/generate-recipes.py` are the
+  single source of truth for the base and NVIDIA recipe variants.
+- `files/usr/lib/lumenora/gpu-common.sh` contains shared image verification
+  and GPU allowlist logic; `lumenora-gpu-switch` provides manual status,
+  verification, and digest-pinned switching.
 - `files/scripts/swap-ogc-kernel.sh` swaps the stock kernel for the OGC
   gaming kernel (pinned, version-locked) during the image build.
 - `files/scripts/update-os.sh` refreshes all packages (latest Plasma 6.7).

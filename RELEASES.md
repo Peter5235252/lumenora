@@ -22,14 +22,16 @@ itself; the image, installer, signatures, and hardware notes must agree.
 ## Installer
 
 - [ ] Create the release tag only after the payload image is available in GHCR.
-- [ ] Confirm the tag-triggered installer workflow uses the intended immutable
-      payload reference rather than an unreviewed `latest` image.
+- [ ] Confirm the tag-triggered installer workflow resolves the payload to
+      an immutable digest and that `installer/interactive-defaults.ks` contains
+      the injected digest in the build workspace.
 - [ ] Confirm the ISO is attached to the matching GitHub release.
 - [ ] Boot the ISO in a VM and verify Anaconda text, branding, networking, and
       a successful GRUB installation.
 - [ ] Test first boot from the installed disk and confirm rollback is usable.
-- [ ] Record the ISO filename, size, checksum, and payload reference in the
-      release notes.
+- [ ] Record the ISO filename, size, checksum, payload digest,
+      image-builder digest, and source commit from `LUMENORA-BUILD-METADATA`
+      in the release notes.
 
 ## Hardware Gate
 
@@ -41,6 +43,8 @@ itself; the image, installer, signatures, and hardware notes must agree.
       and verify display, suspend/resume, Vulkan, and a game launch.
 - [ ] Exercise automatic GPU selection and the
       `lumenora-no-auto-gpu` recovery path.
+- [ ] From a clean install, run `lumenora-gpu-switch verify open` and a
+      `--dry-run` switch before staging a real rebase.
 - [ ] Document hardware that remains untested instead of implying coverage.
 
 ## After Publishing
@@ -50,6 +54,8 @@ itself; the image, installer, signatures, and hardware notes must agree.
 - [ ] Keep the previous known-good image reference available for rollback.
 - [ ] Move unfinished hardware or installer work into the next section of
       `todo.md`.
+- [ ] Keep the ISO, `SHA256SUMS`, and `LUMENORA-BUILD-METADATA` together
+      when publishing or mirroring a release.
 
 Stable release timing is deliberately validation-driven. It may land between
 August and November, or later if the hardware gate is not complete.

@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- **Installer payloads are reproducible.** Tagged and manually dispatched ISO
+  builds resolve the payload to an immutable GHCR digest, inject that digest
+  into Anaconda's kickstart defaults, and publish the payload, image-builder,
+  source-commit, and ISO checksum metadata. The stale hardcoded fallback was
+  removed.
+- **GPU switching is signed and digest-pinned.** Automatic NVIDIA selection and
+  the new `lumenora-gpu-switch` utility verify images with the bundled Cosign
+  public key, resolve their manifest digest, verify the digest, and pass the
+  immutable reference to `bootc switch`.
+- **Recipe drift is guarded.** The three BlueBuild recipes are generated from
+  `recipes/recipe-template.yml`; validation fails when a generated variant is
+  stale.
+- **Release guidance updated.** README and RELEASES now describe the exact
+  payload metadata, manual GPU commands, and validation expectations.
+
 - **SPDX headers on all MIT-licensed scripts.** The eight scripts listed in
   `LICENSE` section (A) now carry `# SPDX-License-Identifier: MIT`, matching
   the LICENSE's own SPDX guidance. `scripts/validate.sh` asserts the headers

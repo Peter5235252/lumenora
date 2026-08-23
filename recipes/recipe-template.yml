@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
-name: lumenora-nvidia
-description: Lumenora KDE Plasma gaming distro with the NVIDIA driver (akmods, proprietary flavor)
+name: {{NAME}}
+description: {{DESCRIPTION}}
 base-image: quay.io/fedora-ostree-desktops/kinoite
 image-version: "44"
 
@@ -16,12 +16,7 @@ modules:
       - fish-default.sh
       - lumen-theme.sh
 
-  - type: akmods
-    base: ogc
-    nvidia-driver: nvidia
-    install: []
-
-  - type: rpm-ostree
+{{AKMODS}}  - type: rpm-ostree
     repos:
       - https://copr.fedorainfracloud.org/coprs/kylegospo/bazaar/repo/fedora-44/kylegospo-bazaar-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/chronoscrat/oh-my-posh/repo/fedora-44/chronoscrat-oh-my-posh-fedora-44.repo

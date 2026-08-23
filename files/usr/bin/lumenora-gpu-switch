@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -euo pipefail
+
+source /usr/lib/lumenora/gpu-common.sh
+
+usage() {
+    cat <<'USAGE'
+Usage:
+  lumenora-gpu-switch status
+  lumenora-gpu-switch auto [--force]
+  lumenora-gpu-switch base|proprietary|open [--dry-run] [--reboot]
+  lumenora-gpu-switch verify base|proprietary|open
+USAGE
+}
+
+action="${1:-status}"
+shift || true
+dry_run="no"
+reboot="no"
+force="no"
+
+while (($#)); do
+    case "$1" in
+        --dry-run) dry_run="yes" ;;
+        --reboot) reboot="yes" ;;
+        --force) force="yes" ;;
+        -h|--help) usage; exit 0 ;;
+        *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
+    esac
+    shift
+done
+
+if [[ "$action" == "verify" ]]; then
+    variant="${1:-}"
+    echo "verify requires a variant." >&2
+    exit 2
+fi
+
+case "$action" in
+    status)
+        bootc status || true
+        for marker in /var/lib/lumenora/gpu-checked /var/lib/lumenora/gpu-switch-failed /var/lib/lumenora/gpu-hybrid-laptop; do
+            if [[ -e "$marker" ]]; then
+                echo "marker: $marker"
+            fi
+        done
+        ;;
+    auto)
+        if [[ "$force" == "yes" ]]; then
+            grubby --update-kernel=ALL --args="lumenora-force-auto-gpu"
+        fi
+        rm -f /var/lib/lumenora/gpu-checked /var/lib/lumenora/gpu-switch-failed
+        systemctl restart lumenora-gpu-detect.service
+        ;;
+    base|proprietary|open)
+        ref="$(image_ref_for_variant "$action")"
+        resolved="$(verify_and_resolve_image "$ref")"
+        echo "verified: $resolved"
+        if [[ "$dry_run" == "yes" ]]; then
+            exit 0
+        fi
+        bootc switch "$resolved"
+        echo "Switch staged. Reboot when ready."
+        if [[ "$reboot" == "yes" ]]; then
+            systemctl reboot
+        fi
+        ;;
+    *)
+        usage >&2
+        exit 2
+        ;;
+esac

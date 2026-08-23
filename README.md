@@ -161,11 +161,12 @@ standard `dnf`. Instead:
   applies once the NVIDIA variant is selected manually). To force the automatic
   switch on a hybrid laptop anyway, add the kernel argument
   `lumenora-force-auto-gpu`.
-- The NVIDIA variant packages in GHCR must be **Public** for the anonymous
-  first-boot pull. The script pre-flights this with an unauthenticated
-  manifest request before `bootc switch` and explains the fix if the package
-  is private. The `lumenora`, `lumenora-nvidia`, and `lumenora-nvidia-open`
-  packages are public.
+- The NVIDIA variant packages in GHCR must be **Public** for the first-boot
+  manifest lookup. Before switching, the script verifies the image with the
+  bundled `/etc/lumenora/cosign.pub` key, resolves the registry manifest to a
+  digest, verifies that digest, and passes the immutable reference to
+  `bootc switch`. The `lumenora`, `lumenora-nvidia`, and
+  `lumenora-nvidia-open` packages must remain public.
 - The initial boot is always the base image. A detected NVIDIA GPU requires a
   registry connection, one successful `bootc switch`, and one reboot before
   the matching variant is active. The switch retries transient pull failures
@@ -369,7 +370,13 @@ of important files and retain the installer ISO for recovery.
 - `installer/iso.yaml` defines the boot menu and ISO label.
 - `installer/interactive-defaults.ks` points Anaconda at the Lumenora payload.
 - `.github/workflows/build.yml` builds and signs all three images.
-- `.github/workflows/installer.yml` builds and uploads the graphical ISO.
+- `.github/workflows/installer.yml` builds and uploads the graphical ISO,
+  embedding an exact payload digest and publishing `LUMENORA-BUILD-METADATA`.
+- `recipes/recipe-template.yml` and `scripts/generate-recipes.py` are the
+  single source of truth for the base and NVIDIA recipe variants.
+- `files/usr/lib/lumenora/gpu-common.sh` contains shared image verification
+  and GPU allowlist logic; `lumenora-gpu-switch` provides manual status,
+  verification, and digest-pinned switching.
 - `files/scripts/swap-ogc-kernel.sh` swaps the stock kernel for the OGC
   gaming kernel (pinned, version-locked) during the image build.
 - `files/scripts/update-os.sh` refreshes all packages (latest Plasma 6.7).

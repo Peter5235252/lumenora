@@ -19,6 +19,8 @@ for script in \
     files/scripts/swap-ogc-kernel.sh \
     files/scripts/update-os.sh \
     files/usr/bin/lumenora-gpu-detect.sh \
+    files/usr/bin/lumenora-gpu-switch \
+    files/usr/lib/lumenora/gpu-common.sh \
     scripts/validate.sh; do
     if ! grep -q '^# SPDX-License-Identifier: MIT' "$script"; then
         echo "ERROR: $script is missing the SPDX-License-Identifier: MIT header" >&2

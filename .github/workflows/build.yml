@@ -108,6 +108,10 @@ jobs:
           podman image exists "$IMAGE"
           podman run --rm --entrypoint /bin/bash "$IMAGE" -ceu '
             test -x /usr/bin/lumenora-gpu-detect.sh
+            test -x /usr/bin/lumenora-gpu-switch
+            test -f /usr/lib/lumenora/gpu-common.sh
+            test -f /etc/lumenora/cosign.pub
+            command -v cosign >/dev/null
             test -f /usr/lib/systemd/system/lumenora-gpu-detect.service
             test -f /usr/share/wallpapers/Lumen/metadata.json
             test -d /usr/lib/modules

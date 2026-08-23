@@ -29,7 +29,6 @@ done
 echo "Checking GPU open-kernel support allowlist..."
 gpu_script="files/usr/bin/lumenora-gpu-detect.sh"
 gpu_common="files/usr/lib/lumenora/gpu-common.sh"
-gpu_common="files/usr/lib/lumenora/gpu-common.sh"
 python3 scripts/generate-recipes.py --check
 grep -q '^open_supported_ids=(' "$gpu_common"
 if grep -q 'turing_id_threshold' "$gpu_script"; then

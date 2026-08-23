@@ -45,6 +45,18 @@ the box and detects the GPU at first boot to select the right drivers.
   system management
 - Fedora's Anaconda installer and unified Image Builder
 
+## Release status
+
+The current beta is validation-driven. The base image has VM validation; the
+NVIDIA variants compile and publish but require representative NVIDIA hardware
+testing before stable promotion. Every installer build records the exact
+payload digest, image-builder digest, source commit, and ISO checksum in
+`LUMENORA-BUILD-METADATA` and `SHA256SUMS`.
+
+For a tagged release, use the ISO and metadata together. The metadata tells you
+exactly which immutable image payload the installer embeds; do not substitute
+`:latest` when reproducing a release.
+
 ## Theme ("Lumen")
 
 Lumenora ships a custom deep space blue/purple theme called **Lumen** as the
@@ -160,14 +172,21 @@ standard `dnf`. Instead:
   three times; after a permanent failure it records
   `/var/lib/lumenora/gpu-switch-failed` and stops retrying automatically.
   Remove that marker and `/var/lib/lumenora/gpu-checked` before retrying
-  manually after fixing the network or selecting another image.
+  manually after fixing the network or selecting another image. The
+  `lumenora-gpu-switch` command makes this explicit:
+  `sudo lumenora-gpu-switch verify open`,
+  `sudo lumenora-gpu-switch open --dry-run`, or
+  `sudo lumenora-gpu-switch proprietary --reboot`.
+  Use `sudo lumenora-gpu-switch status` to inspect the active deployment and
+  detection markers.
 - Automatic selection is intentionally conservative. It has not been tested
   on real NVIDIA hardware, eGPUs, or every PCI generation. Keep
   `lumenora-no-auto-gpu` available as a recovery option.
 - To disable the automatic switch, add the kernel argument
   `lumenora-no-auto-gpu` (e.g. with `bootc`'s kernel arg support or at
   install time). Manual rebase to a specific NVIDIA image:
-  `sudo bootc switch ghcr.io/peter5235252/lumenora-nvidia:latest`.
+  `sudo lumenora-gpu-switch proprietary --reboot` (or `open`); the command
+  verifies the signed image and switches by immutable digest.
 
 ## User setup and security
 

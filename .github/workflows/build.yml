@@ -106,18 +106,31 @@ jobs:
           IMAGE_TAG="${GITHUB_SHA::7}-44"
           IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
           podman image exists "$IMAGE"
-          podman run --rm --entrypoint /bin/bash "$IMAGE" -ceu '
-            test -x /usr/bin/lumenora-gpu-detect.sh
-            test -x /usr/bin/lumenora-gpu-switch
-            test -f /usr/lib/lumenora/gpu-common.sh
-            test -f /etc/lumenora/cosign.pub
-            command -v cosign >/dev/null
-            test -f /usr/lib/systemd/system/lumenora-gpu-detect.service
-            test -f /usr/share/wallpapers/Lumen/metadata.json
-            test -d /usr/lib/modules
+          echo "=== Checking $IMAGE (nvidia=$NVIDIA_VARIANT) ==="
+          podman run --rm --entrypoint /bin/bash "$IMAGE" -c '
+            set -x
+            echo "--- gpu-detect ---"
+            test -x /usr/bin/lumenora-gpu-detect.sh || { echo "FAIL gpu-detect"; ls -l /usr/bin/lumenora*; exit 1; }
+            echo "--- gpu-switch ---"
+            test -x /usr/bin/lumenora-gpu-switch || { echo "FAIL gpu-switch"; ls -l /usr/bin/lumenora*; exit 1; }
+            echo "--- gpu-common ---"
+            test -f /usr/lib/lumenora/gpu-common.sh || { echo "FAIL gpu-common"; ls -l /usr/lib/lumenora/; exit 1; }
+            echo "--- cosign.pub ---"
+            test -f /etc/lumenora/cosign.pub || { echo "FAIL cosign.pub"; ls -l /etc/lumenora/; exit 1; }
+            echo "--- cosign binary ---"
+            command -v cosign >/dev/null || { echo "FAIL cosign binary"; ls -l /usr/bin/cosign* 2>&1 | head; echo PATH=$PATH; exit 1; }
+            cosign version
+            echo "--- service ---"
+            test -f /usr/lib/systemd/system/lumenora-gpu-detect.service || { echo "FAIL service"; ls -l /usr/lib/systemd/system/lumenora*; exit 1; }
+            echo "--- wallpaper ---"
+            test -f /usr/share/wallpapers/Lumen/metadata.json || { echo "FAIL wallpaper"; ls -l /usr/share/wallpapers/Lumen/; exit 1; }
+            echo "--- modules ---"
+            test -d /usr/lib/modules || { echo "FAIL modules"; ls -l /usr/lib/; exit 1; }
+            ls -l /usr/lib/modules
             if [ "${NVIDIA_VARIANT}" = "true" ]; then
-              echo "Verifying NVIDIA EULA is shipped (NVIDIA Driver License Agreement)"
-              test -f /usr/share/licenses/xorg-x11-drv-nvidia/LICENSE
-              grep -q "NVIDIA Driver License Agreement" /usr/share/licenses/xorg-x11-drv-nvidia/LICENSE
+              echo "Verifying NVIDIA EULA"
+              test -f /usr/share/licenses/xorg-x11-drv-nvidia/LICENSE || { echo "FAIL LICENSE"; ls -l /usr/share/licenses/xorg-x11-drv-nvidia/ 2>&1 | head; exit 1; }
+              grep -q "NVIDIA Driver License Agreement" /usr/share/licenses/xorg-x11-drv-nvidia/LICENSE || { echo "FAIL LICENSE content"; cat /usr/share/licenses/xorg-x11-drv-nvidia/LICENSE 2>&1 | head; exit 1; }
             fi
+            echo "=== All checks passed ==="
           '

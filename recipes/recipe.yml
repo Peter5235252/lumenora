@@ -22,7 +22,6 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/chronoscrat/oh-my-posh/repo/fedora-44/chronoscrat-oh-my-posh-fedora-44.repo
     install:
       - curl
-      - cosign
       - tar
       - fastfetch
       - pciutils
@@ -50,6 +49,10 @@ modules:
       - khelpcenter
       - plasma-welcome
       - plasma-welcome-fedora
+
+  - type: script
+    scripts:
+      - install-cosign.sh
 
   - type: default-flatpaks
     configurations:

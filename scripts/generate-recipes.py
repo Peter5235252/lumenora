@@ -14,7 +14,7 @@ VARIANTS = {
     "recipe-nvidia.yml": {
         "name": "lumenora-nvidia",
         "description": "Lumenora KDE Plasma gaming distro with the NVIDIA driver (akmods, proprietary flavor)",
-        "akmods": "  - type: akmods\n    base: ogc\n    nvidia-driver: nvidia\n    install: []\n\n",
+        "akmods": "  - type: akmods\n    base: ogc\n    nvidia-driver: nvidia-open\n    install: []\n\n",
     },
     "recipe-nvidia-open.yml": {
         "name": "lumenora-nvidia-open",
